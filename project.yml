@@ -1,0 +1,52 @@
+name: Wilson
+options:
+  bundleIdPrefix: com.landreman
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    PRODUCT_NAME: Wilson
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: 1
+    SWIFT_STRICT_CONCURRENCY: complete
+
+targets:
+  Wilson:
+    type: application
+    platform: macOS
+    sources:
+      - Wilson
+    resources:
+      - Wilson/Resources
+    settings:
+      base:
+        INFOPLIST_FILE: Wilson/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Wilson/Wilson.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.landreman.Wilson
+        ENABLE_HARDENED_RUNTIME: true
+    entitlements:
+      path: Wilson/Wilson.entitlements
+      properties:
+        com.apple.security.audio.capture: true
+    scheme:
+      testTargets:
+        - WilsonTests
+
+  WilsonTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - WilsonTests
+    dependencies:
+      - target: Wilson
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.landreman.WilsonTests
+        PRODUCT_MODULE_NAME: WilsonTests
+        GENERATE_INFOPLIST_FILE: true

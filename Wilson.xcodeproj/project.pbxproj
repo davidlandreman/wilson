@@ -1,0 +1,606 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		025E4A236227BD64554D218E /* AudioDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4335C4D6C55FB975B781B45A /* AudioDebugView.swift */; };
+		1633DEA713D4EE32C63D8DBF /* DecisionEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */; };
+		2276ED5989DD9F172CA7E01F /* Fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF20F127C9436DDFB8A4976 /* Fixture.swift */; };
+		3585B984D13B999891A6C547 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EAA08AD57A8AD3ED95BD348 /* Assets.xcassets */; };
+		3969BFD5E5A2D472727D7EDA /* CueService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1DDC62C405FAB0DF86EA3 /* CueService.swift */; };
+		3E28C5F1F26FD1866472C9CD /* WilsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C68BB924C98F5A13EB112B /* WilsonTests.swift */; };
+		45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */; };
+		4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A844464B464E6C6F04651AA3 /* DashboardView.swift */; };
+		53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017A399C0A8779816C5A2F65 /* DMXFrame.swift */; };
+		54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */; };
+		74C556662A4C8B32F6858950 /* MusicalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F00BBFE9999D285B82C15F4 /* MusicalState.swift */; };
+		7876ED0D61DB35ABFC8694CF /* ChromagramAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */; };
+		81030A3C16815BFAC8217620 /* WilsonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93AED515DAC28AB427A09E4 /* WilsonApp.swift */; };
+		A45A735A9A42A9A9C25523E9 /* Cue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8877B2F11C8A5BC94C2B2532 /* Cue.swift */; };
+		A999C9117DA71F443C71EDA1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB96170AD830DFD81168DA2E /* AppState.swift */; };
+		AB3C1278A95855EECA792A45 /* OnsetDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */; };
+		B29183A3DAB5AE6CA793E61A /* DMXOutputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */; };
+		B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680653EC2893A552CD747147 /* FixtureManager.swift */; };
+		C926ED814C7480F0F8785F3A /* AudioAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */; };
+		CA96168956126E2C8B0BA5F3 /* BeatTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B164A7776115CB7706F3CC /* BeatTracker.swift */; };
+		DAAE1FC8E374FBEC6C145BCC /* EnergyAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721012FB9EABB73E7E4F98EC /* EnergyAnalyzer.swift */; };
+		DB8A5C6C8FBF076A8A5485F5 /* FFTEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289A35A7F72F231580CDCAB9 /* FFTEngine.swift */; };
+		E2E5809E9FD650F2B7DAD071 /* AudioAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */; };
+		F1246AA1783C3914304E9A9E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6D0510E1433FFA967C6889A /* ContentView.swift */; };
+		FBC83C01E152FB05B0F5835B /* AudioCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 730987D1CE95B292649246FF /* AudioCaptureService.swift */; };
+		FF0108293FF7732D7A89E3E9 /* DSPPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD6D77DBB932D124934B75E /* DSPPipeline.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BD0968E16064AC8E9280727F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0420E227D786E78EF60D6263 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 852F92366F7CAF54DAD8E192;
+			remoteInfo = Wilson;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		017A399C0A8779816C5A2F65 /* DMXFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXFrame.swift; sourceTree = "<group>"; };
+		0EAA08AD57A8AD3ED95BD348 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1BD6D77DBB932D124934B75E /* DSPPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSPPipeline.swift; sourceTree = "<group>"; };
+		289A35A7F72F231580CDCAB9 /* FFTEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFTEngine.swift; sourceTree = "<group>"; };
+		3F00BBFE9999D285B82C15F4 /* MusicalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicalState.swift; sourceTree = "<group>"; };
+		423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromagramAnalyzer.swift; sourceTree = "<group>"; };
+		4335C4D6C55FB975B781B45A /* AudioDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDebugView.swift; sourceTree = "<group>"; };
+		4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnsetDetector.swift; sourceTree = "<group>"; };
+		56B164A7776115CB7706F3CC /* BeatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTracker.swift; sourceTree = "<group>"; };
+		62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAnalysisService.swift; sourceTree = "<group>"; };
+		638DAB193B0913BC4CEC4D48 /* Wilson.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wilson.entitlements; sourceTree = "<group>"; };
+		680653EC2893A552CD747147 /* FixtureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureManager.swift; sourceTree = "<group>"; };
+		6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXOutputService.swift; sourceTree = "<group>"; };
+		721012FB9EABB73E7E4F98EC /* EnergyAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyAnalyzer.swift; sourceTree = "<group>"; };
+		730987D1CE95B292649246FF /* AudioCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureService.swift; sourceTree = "<group>"; };
+		81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAnalysisTests.swift; sourceTree = "<group>"; };
+		8462CECAB199124234E24BE8 /* WilsonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WilsonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8877B2F11C8A5BC94C2B2532 /* Cue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cue.swift; sourceTree = "<group>"; };
+		8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionEngineService.swift; sourceTree = "<group>"; };
+		A8040E60C78EC2FAF89B8AB7 /* Wilson.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wilson.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A844464B464E6C6F04651AA3 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		AAC1DDC62C405FAB0DF86EA3 /* CueService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CueService.swift; sourceTree = "<group>"; };
+		AB96170AD830DFD81168DA2E /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
+		BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectralAnalyzer.swift; sourceTree = "<group>"; };
+		C93AED515DAC28AB427A09E4 /* WilsonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonApp.swift; sourceTree = "<group>"; };
+		D0C68BB924C98F5A13EB112B /* WilsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonTests.swift; sourceTree = "<group>"; };
+		D6D0510E1433FFA967C6889A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E048E08585BF15D43EE746B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FFF20F127C9436DDFB8A4976 /* Fixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixture.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		10BC9916E28CF0C47F4BEE80 /* Wilson */ = {
+			isa = PBXGroup;
+			children = (
+				67D599BB32F983B9C3BDD23E /* App */,
+				6E491ED49EB0DF8C9FA4091B /* Models */,
+				6A7D584FF8313A6E48F4C792 /* Resources */,
+				4E8BF6DDAAFB1F96EF99FC00 /* Services */,
+				649BB06052A90B273A4256E0 /* Views */,
+				E048E08585BF15D43EE746B6 /* Info.plist */,
+				638DAB193B0913BC4CEC4D48 /* Wilson.entitlements */,
+			);
+			path = Wilson;
+			sourceTree = "<group>";
+		};
+		3C6046182E19DBC1FB996F79 /* AudioCapture */ = {
+			isa = PBXGroup;
+			children = (
+				730987D1CE95B292649246FF /* AudioCaptureService.swift */,
+			);
+			path = AudioCapture;
+			sourceTree = "<group>";
+		};
+		425F38567ECCEEC6639C955C = {
+			isa = PBXGroup;
+			children = (
+				10BC9916E28CF0C47F4BEE80 /* Wilson */,
+				E9188B2718C5169C1BFCC057 /* WilsonTests */,
+				768BEDB6EF7900C40D0BE8CE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4E8BF6DDAAFB1F96EF99FC00 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CC3DD286A64B2EF38EE78C78 /* AudioAnalysis */,
+				3C6046182E19DBC1FB996F79 /* AudioCapture */,
+				9C8EF7BF8EA6F967415169C4 /* CueSystem */,
+				6F0A1D55B61647DE3D8721AD /* DecisionEngine */,
+				66DF84CE54BAC1DC2052EC32 /* DMXOutput */,
+				5466C9025CCCE98DD0959D23 /* FixtureManagement */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		5466C9025CCCE98DD0959D23 /* FixtureManagement */ = {
+			isa = PBXGroup;
+			children = (
+				680653EC2893A552CD747147 /* FixtureManager.swift */,
+			);
+			path = FixtureManagement;
+			sourceTree = "<group>";
+		};
+		649BB06052A90B273A4256E0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CDFCAB20BAE2BC3A8EE26E98 /* Dashboard */,
+				79C5DF70DCB0E77CADDC2FA3 /* Debug */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		66DF84CE54BAC1DC2052EC32 /* DMXOutput */ = {
+			isa = PBXGroup;
+			children = (
+				6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */,
+			);
+			path = DMXOutput;
+			sourceTree = "<group>";
+		};
+		67D599BB32F983B9C3BDD23E /* App */ = {
+			isa = PBXGroup;
+			children = (
+				AB96170AD830DFD81168DA2E /* AppState.swift */,
+				D6D0510E1433FFA967C6889A /* ContentView.swift */,
+				C93AED515DAC28AB427A09E4 /* WilsonApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6A7D584FF8313A6E48F4C792 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0EAA08AD57A8AD3ED95BD348 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		6E491ED49EB0DF8C9FA4091B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8877B2F11C8A5BC94C2B2532 /* Cue.swift */,
+				017A399C0A8779816C5A2F65 /* DMXFrame.swift */,
+				FFF20F127C9436DDFB8A4976 /* Fixture.swift */,
+				3F00BBFE9999D285B82C15F4 /* MusicalState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		6F0A1D55B61647DE3D8721AD /* DecisionEngine */ = {
+			isa = PBXGroup;
+			children = (
+				8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */,
+			);
+			path = DecisionEngine;
+			sourceTree = "<group>";
+		};
+		768BEDB6EF7900C40D0BE8CE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A8040E60C78EC2FAF89B8AB7 /* Wilson.app */,
+				8462CECAB199124234E24BE8 /* WilsonTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		79C5DF70DCB0E77CADDC2FA3 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				4335C4D6C55FB975B781B45A /* AudioDebugView.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		9C8EF7BF8EA6F967415169C4 /* CueSystem */ = {
+			isa = PBXGroup;
+			children = (
+				AAC1DDC62C405FAB0DF86EA3 /* CueService.swift */,
+			);
+			path = CueSystem;
+			sourceTree = "<group>";
+		};
+		CC3DD286A64B2EF38EE78C78 /* AudioAnalysis */ = {
+			isa = PBXGroup;
+			children = (
+				62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */,
+				56B164A7776115CB7706F3CC /* BeatTracker.swift */,
+				423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */,
+				1BD6D77DBB932D124934B75E /* DSPPipeline.swift */,
+				721012FB9EABB73E7E4F98EC /* EnergyAnalyzer.swift */,
+				289A35A7F72F231580CDCAB9 /* FFTEngine.swift */,
+				4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */,
+				BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */,
+				BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */,
+			);
+			path = AudioAnalysis;
+			sourceTree = "<group>";
+		};
+		CDFCAB20BAE2BC3A8EE26E98 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A844464B464E6C6F04651AA3 /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		E9188B2718C5169C1BFCC057 /* WilsonTests */ = {
+			isa = PBXGroup;
+			children = (
+				81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */,
+				D0C68BB924C98F5A13EB112B /* WilsonTests.swift */,
+			);
+			path = WilsonTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A01D7BEB669660B3036F132 /* WilsonTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99AA4EB76C86F0D14132E529 /* Build configuration list for PBXNativeTarget "WilsonTests" */;
+			buildPhases = (
+				635A2C25F4B593D80FB3602B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7ACC0D928B987C61442A37B3 /* PBXTargetDependency */,
+			);
+			name = WilsonTests;
+			packageProductDependencies = (
+			);
+			productName = WilsonTests;
+			productReference = 8462CECAB199124234E24BE8 /* WilsonTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		852F92366F7CAF54DAD8E192 /* Wilson */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61AEBE69B0152A38A3A49028 /* Build configuration list for PBXNativeTarget "Wilson" */;
+			buildPhases = (
+				CFEBDD7E6E1FD0E2E6B242F0 /* Sources */,
+				ACEA9844D910FB2B90147C20 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Wilson;
+			packageProductDependencies = (
+			);
+			productName = Wilson;
+			productReference = A8040E60C78EC2FAF89B8AB7 /* Wilson.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0420E227D786E78EF60D6263 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = F843B9304361087F426455F7 /* Build configuration list for PBXProject "Wilson" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 425F38567ECCEEC6639C955C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 768BEDB6EF7900C40D0BE8CE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				852F92366F7CAF54DAD8E192 /* Wilson */,
+				0A01D7BEB669660B3036F132 /* WilsonTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ACEA9844D910FB2B90147C20 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3585B984D13B999891A6C547 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		635A2C25F4B593D80FB3602B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E5809E9FD650F2B7DAD071 /* AudioAnalysisTests.swift in Sources */,
+				3E28C5F1F26FD1866472C9CD /* WilsonTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEBDD7E6E1FD0E2E6B242F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A999C9117DA71F443C71EDA1 /* AppState.swift in Sources */,
+				C926ED814C7480F0F8785F3A /* AudioAnalysisService.swift in Sources */,
+				FBC83C01E152FB05B0F5835B /* AudioCaptureService.swift in Sources */,
+				025E4A236227BD64554D218E /* AudioDebugView.swift in Sources */,
+				CA96168956126E2C8B0BA5F3 /* BeatTracker.swift in Sources */,
+				7876ED0D61DB35ABFC8694CF /* ChromagramAnalyzer.swift in Sources */,
+				F1246AA1783C3914304E9A9E /* ContentView.swift in Sources */,
+				A45A735A9A42A9A9C25523E9 /* Cue.swift in Sources */,
+				3969BFD5E5A2D472727D7EDA /* CueService.swift in Sources */,
+				53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */,
+				B29183A3DAB5AE6CA793E61A /* DMXOutputService.swift in Sources */,
+				FF0108293FF7732D7A89E3E9 /* DSPPipeline.swift in Sources */,
+				4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */,
+				1633DEA713D4EE32C63D8DBF /* DecisionEngineService.swift in Sources */,
+				DAAE1FC8E374FBEC6C145BCC /* EnergyAnalyzer.swift in Sources */,
+				DB8A5C6C8FBF076A8A5485F5 /* FFTEngine.swift in Sources */,
+				2276ED5989DD9F172CA7E01F /* Fixture.swift in Sources */,
+				B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */,
+				74C556662A4C8B32F6858950 /* MusicalState.swift in Sources */,
+				AB3C1278A95855EECA792A45 /* OnsetDetector.swift in Sources */,
+				54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */,
+				45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */,
+				81030A3C16815BFAC8217620 /* WilsonApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7ACC0D928B987C61442A37B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 852F92366F7CAF54DAD8E192 /* Wilson */;
+			targetProxy = BD0968E16064AC8E9280727F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4763DBB25BB700971734D951 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Wilson;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		5396D6F0A5EC40E11FA84884 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = Wilson;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		77C6B1D8259C3364C402D66E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.landreman.WilsonTests;
+				PRODUCT_MODULE_NAME = WilsonTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wilson.app/Contents/MacOS/Wilson";
+			};
+			name = Debug;
+		};
+		7CEBB931497265271C5DD84D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wilson/Wilson.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Wilson/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.landreman.Wilson;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CC3A1EEA97B780CC0D3C8676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.landreman.WilsonTests;
+				PRODUCT_MODULE_NAME = WilsonTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wilson.app/Contents/MacOS/Wilson";
+			};
+			name = Release;
+		};
+		CF9E10E74FBD573A0C4796E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Wilson/Wilson.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Wilson/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.landreman.Wilson;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		61AEBE69B0152A38A3A49028 /* Build configuration list for PBXNativeTarget "Wilson" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF9E10E74FBD573A0C4796E4 /* Debug */,
+				7CEBB931497265271C5DD84D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		99AA4EB76C86F0D14132E529 /* Build configuration list for PBXNativeTarget "WilsonTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77C6B1D8259C3364C402D66E /* Debug */,
+				CC3A1EEA97B780CC0D3C8676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F843B9304361087F426455F7 /* Build configuration list for PBXProject "Wilson" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4763DBB25BB700971734D951 /* Debug */,
+				5396D6F0A5EC40E11FA84884 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0420E227D786E78EF60D6263 /* Project object */;
+}
