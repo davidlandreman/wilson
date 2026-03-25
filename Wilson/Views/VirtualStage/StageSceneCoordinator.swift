@@ -85,6 +85,7 @@ final class StageSceneCoordinator {
             guard let state = renderStates[id] else {
                 // Fixture has no state — turn off
                 nodes.spotLight.intensity = 0
+                nodes.glowLight.intensity = 0
                 nodes.beamMaterial.diffuse.contents = NSColor.black
                 continue
             }
@@ -95,6 +96,10 @@ final class StageSceneCoordinator {
             // Update spot light
             nodes.spotLight.color = nsColor
             nodes.spotLight.intensity = CGFloat(intensity * 30000)
+
+            // Update glow light — illuminates truss and fixture body
+            nodes.glowLight.color = nsColor
+            nodes.glowLight.intensity = CGFloat(intensity * 2000)
 
             // Update beam — brightness via dim color (not transparency).
             // Single-sided cone: ~8 overlapping faces from side.
@@ -139,6 +144,11 @@ final class StageSceneCoordinator {
         beamConeNode.position = SCNVector3(0, -0.32, 0)
         container.addChildNode(beamConeNode)
 
+        // Glow light — positioned at the fixture body to illuminate the truss above
+        let (glowLightNode, glowLight) = StageGeometry.makeGlowLight()
+        glowLightNode.position = SCNVector3(0, 0.05, 0) // near the top, close to truss
+        container.addChildNode(glowLightNode)
+
         return FixtureSceneNodes(
             containerNode: container,
             bodyNode: bodyNode,
@@ -146,7 +156,8 @@ final class StageSceneCoordinator {
             spotLight: spotLight,
             spotLightNode: spotLightNode,
             beamConeNode: beamConeNode,
-            beamMaterial: beamMaterial
+            beamMaterial: beamMaterial,
+            glowLight: glowLight
         )
     }
 

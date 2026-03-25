@@ -5,7 +5,7 @@ enum StageGeometry {
 
     // MARK: - Scene Constants
 
-    static let trussLength: Float = 5.0
+    static let trussLength: Float = 7.0
     static let trussHeight: Float = 3.5
     static let trussDepth: Float = -1.0 // slightly upstage
     static let trussSection: Float = 0.30 // cross-section width/height
@@ -175,10 +175,12 @@ enum StageGeometry {
         let node = SCNNode()
         node.name = "camera"
         node.camera = camera
-        node.position = SCNVector3(0, 1.8, 7)
-        // Explicit orientation: look toward stage (negative Z), tilted slightly up
-        // atan2(2.0 - 1.8, 7.0) ≈ 0.0286 rad ≈ 1.6° up — almost horizontal
-        node.eulerAngles = SCNVector3(-0.15, 0, 0) // tilt ~8.6° up to frame the truss
+        // 15° offset to the right for a slight angle on the truss
+        let angle: Float = 15 * .pi / 180
+        let distance: Float = 7.0
+        node.position = SCNVector3(sin(angle) * distance, 2.4, cos(angle) * distance)
+        // Look toward stage center, tilted slightly up to frame the truss
+        node.eulerAngles = SCNVector3(-0.15, angle, 0)
 
         return node
     }
@@ -188,8 +190,8 @@ enum StageGeometry {
     static func makeAmbientLight() -> SCNNode {
         let light = SCNLight()
         light.type = .ambient
-        light.color = NSColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1)
-        light.intensity = 500
+        light.color = NSColor(red: 0.35, green: 0.35, blue: 0.45, alpha: 1)
+        light.intensity = 650
 
         let node = SCNNode()
         node.name = "ambientLight"
@@ -218,20 +220,13 @@ enum StageGeometry {
 
     // MARK: - Center-Out Positioning
 
-    /// Convert a truss slot index to an X position on the truss.
-    /// Slot 0 = center, then alternating right/left outward.
+    /// Evenly distribute fixtures across the truss.
+    /// With N fixtures, positions are symmetric: -L/2 + L*(i+1)/(N+1)
     static func trussXPosition(slotIndex: Int, totalFixtures: Int, trussLength: Float) -> Float {
         guard totalFixtures > 0 else { return 0 }
-
+        let half = trussLength / 2
         let spacing = trussLength / Float(totalFixtures + 1)
-
-        if slotIndex == 0 {
-            return 0
-        }
-
-        let offset = (slotIndex + 1) / 2
-        let sign: Float = slotIndex.isMultiple(of: 2) ? -1 : 1
-        return sign * Float(offset) * spacing
+        return -half + spacing * Float(slotIndex + 1)
     }
 
     // MARK: - Spot Light (per fixture)
@@ -255,6 +250,26 @@ enum StageGeometry {
         node.light = light
         // Point downward
         node.eulerAngles = SCNVector3(-Float.pi / 2, 0, 0)
+
+        return (node: node, light: light)
+    }
+
+    // MARK: - Glow Light (per fixture)
+
+    /// Short-range omni light that illuminates the truss and fixture body
+    /// when the beam is active — sells the illusion that the cone emits light.
+    static func makeGlowLight() -> (node: SCNNode, light: SCNLight) {
+        let light = SCNLight()
+        light.type = .omni
+        light.color = NSColor.white
+        light.intensity = 0
+        light.attenuationStartDistance = 0
+        light.attenuationEndDistance = 1.5
+        light.castsShadow = false
+
+        let node = SCNNode()
+        node.name = "glowLight"
+        node.light = light
 
         return (node: node, light: light)
     }

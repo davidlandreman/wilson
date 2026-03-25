@@ -4,11 +4,11 @@ import Testing
 @Suite("3D Stage Scene Tests")
 struct StageSceneTests {
 
-    // MARK: - Center-Out Positioning Algorithm
+    // MARK: - Even-Spacing Positioning Algorithm
 
     @Test("Single fixture positions at center")
     func singleFixtureCenter() {
-        let x = StageGeometry.trussXPosition(slotIndex: 0, totalFixtures: 1, trussLength: 5.0)
+        let x = StageGeometry.trussXPosition(slotIndex: 0, totalFixtures: 1, trussLength: 6.0)
         #expect(x == 0)
     }
 
@@ -16,30 +16,25 @@ struct StageSceneTests {
     func twoFixturesSymmetric() {
         let x0 = StageGeometry.trussXPosition(slotIndex: 0, totalFixtures: 2, trussLength: 6.0)
         let x1 = StageGeometry.trussXPosition(slotIndex: 1, totalFixtures: 2, trussLength: 6.0)
-        #expect(x0 == 0)
-        #expect(x1 > 0) // first added goes right
+        #expect(x0 < 0) // left of center
+        #expect(x1 > 0) // right of center
+        #expect(x0 == -x1) // symmetric
     }
 
-    @Test("Five fixtures alternate right-left from center")
-    func fiveFixturesAlternate() {
-        let positions = (0..<5).map {
-            StageGeometry.trussXPosition(slotIndex: $0, totalFixtures: 5, trussLength: 6.0)
+    @Test("Three fixtures evenly spaced with center at zero")
+    func threeFixturesEven() {
+        let positions = (0..<3).map {
+            StageGeometry.trussXPosition(slotIndex: $0, totalFixtures: 3, trussLength: 8.0)
         }
-        // Slot 0: center
-        #expect(positions[0] == 0)
-        // Slot 1: right, Slot 2: left (mirror)
-        #expect(positions[1] > 0)
-        #expect(positions[2] < 0)
-        #expect(positions[1] == -positions[2])
-        // Slot 3: further right, Slot 4: further left (mirror)
-        #expect(positions[3] > positions[1])
-        #expect(positions[4] < positions[2])
-        #expect(positions[3] == -positions[4])
+        #expect(positions[0] < 0)
+        #expect(positions[1] == 0) // middle fixture at center
+        #expect(positions[2] > 0)
+        #expect(positions[0] == -positions[2]) // symmetric
     }
 
     @Test("Zero fixtures returns zero")
     func zeroFixtures() {
-        let x = StageGeometry.trussXPosition(slotIndex: 0, totalFixtures: 0, trussLength: 5.0)
+        let x = StageGeometry.trussXPosition(slotIndex: 0, totalFixtures: 0, trussLength: 6.0)
         #expect(x == 0)
     }
 
@@ -90,7 +85,7 @@ struct StageSceneTests {
     func beamConeBlendMode() {
         let (_, material) = StageGeometry.makeBeamCone()
         #expect(material.blendMode == .add)
-        #expect(material.isDoubleSided == true)
+        #expect(material.isDoubleSided == false)
         #expect(material.writesToDepthBuffer == false)
     }
 

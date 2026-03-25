@@ -10,4 +10,5 @@ struct FixtureSceneNodes {
     let spotLightNode: SCNNode
     let beamConeNode: SCNNode
     let beamMaterial: SCNMaterial
+    let glowLight: SCNLight
 }
