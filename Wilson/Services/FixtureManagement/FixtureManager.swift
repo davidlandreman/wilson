@@ -1,20 +1,38 @@
 import Foundation
-import SwiftData
 
-/// Manages the fixture library, patching, and stage layout.
+/// Manages the runtime fixture collection on stage.
 @Observable
 final class FixtureManager {
-    private(set) var patchedFixtures: [PatchedFixture] = []
-    private(set) var fixtureGroups: [String: [PatchedFixture]] = [:]
+    private(set) var fixtures: [StageFixture] = []
 
-    /// Discover what capabilities a fixture has based on its profile.
-    func capabilities(for fixture: PatchedFixture) -> Set<FixtureAttribute> {
-        guard let profile = fixture.profile else { return [] }
-        return Set(profile.channels.map(\.attribute))
+    /// Add a fixture to the stage from a catalog definition.
+    @discardableResult
+    func addFixture(definition: FixtureDefinition, label: String, isVirtual: Bool = true) -> StageFixture {
+        let fixture = StageFixture(
+            label: label,
+            definition: definition,
+            isVirtual: isVirtual,
+            position: nextPosition()
+        )
+        fixtures.append(fixture)
+        return fixture
     }
 
-    /// Get all fixtures that belong to a named group.
-    func fixtures(inGroup group: String) -> [PatchedFixture] {
-        fixtureGroups[group] ?? []
+    /// Remove a fixture by ID.
+    func removeFixture(id: UUID) {
+        fixtures.removeAll { $0.id == id }
+    }
+
+    /// Get all fixtures matching a set of attributes.
+    func fixtures(withAttribute attribute: FixtureAttribute) -> [StageFixture] {
+        fixtures.filter { $0.attributes.contains(attribute) }
+    }
+
+    /// Spread fixtures evenly across the stage.
+    private func nextPosition() -> SIMD2<Double> {
+        let count = Double(fixtures.count)
+        let x = (count.truncatingRemainder(dividingBy: 4) + 0.5) / 4.0
+        let y = (floor(count / 4) + 0.5) / 3.0
+        return SIMD2(x, min(y, 0.9))
     }
 }

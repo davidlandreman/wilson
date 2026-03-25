@@ -17,6 +17,10 @@ final class AudioAnalysisService {
     /// Hop size — 1024 samples (~21ms), 50% overlap, ~47 analyses/sec.
     static let hopSize = 1024
 
+    /// Callback invoked on @MainActor each time musicalState updates (~47Hz).
+    /// Used by AppState to drive the decision engine and virtual output.
+    @ObservationIgnored var onMusicalStateUpdate: (@MainActor (MusicalState) -> Void)?
+
     // MARK: - Internal State
 
     @ObservationIgnored private var pipeline: DSPPipeline?
@@ -72,5 +76,6 @@ private final class StateUpdater: @unchecked Sendable {
 
     @MainActor func apply(_ state: MusicalState) {
         service?.musicalState = state
+        service?.onMusicalStateUpdate?(state)
     }
 }
