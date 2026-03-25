@@ -20,6 +20,10 @@ struct VirtualStageView: View {
                 fixtures: virtualFixtures,
                 renderStates: appState.virtualOutput.renderStates
             )
+            .overlay(alignment: .bottomLeading) {
+                EngineDebugOverlay()
+                    .padding(8)
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -46,6 +50,10 @@ struct FullScreenStageView: View {
             fixtures: virtualFixtures,
             renderStates: appState.virtualOutput.renderStates
         )
+        .overlay(alignment: .bottomLeading) {
+            EngineDebugOverlay()
+                .padding(12)
+        }
         .ignoresSafeArea()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.black)

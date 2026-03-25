@@ -29,6 +29,7 @@ final class DecisionEngineService {
     private(set) var currentMood = MoodState()
     private(set) var activeGroups: [FixtureGroup] = []
     private(set) var activeSlotDescriptions: [String] = []
+    private(set) var currentScenario: Choreographer.Scenario = .lowEnergy
 
     // MARK: - Internal subsystems
 
@@ -71,6 +72,7 @@ final class DecisionEngineService {
         activeSlotDescriptions = choreographer.slots.map {
             "\(type(of: $0.behavior).id) → \($0.groupID.uuidString.prefix(4))"
         }
+        currentScenario = choreographer.currentScenario
 
         // Sync bar counter from mood engine to choreographer
         choreographer.barCounter = moodEngine.barCounter
@@ -140,8 +142,10 @@ final class DecisionEngineService {
                 movementLimiter.apply(to: &state, previous: previous, deltaTime: clock.deltaTime)
             }
 
-            // Silence safety: dim everything to 0
-            if musicalState.isSilent {
+            // Silence safety: behaviors already handle isSilent individually.
+            // Only force blackout when mood intensity has fully decayed,
+            // confirming sustained silence rather than a percussive gap.
+            if musicalState.isSilent && moodEngine.state.intensity < 0.05 {
                 state.attributes[.dimmer] = 0
             }
 

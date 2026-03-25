@@ -15,8 +15,11 @@ struct MoodState: Sendable {
     /// Spectral flatness influence. High = chaotic/noisy, low = ordered/tonal.
     var chaos: Double = 0.3
 
-    /// Overall energy envelope.
+    /// Overall energy envelope (smoothed via asymmetric EMA on peak envelope).
     var intensity: Double = 0.5
+
+    /// Peak energy in the recent beat-length window (raw, not smoothed).
+    var peakEnergy: Double = 0.0
 
     /// Which direction energy is trending.
     var energyTrajectory: EnergyTrajectory = .stable

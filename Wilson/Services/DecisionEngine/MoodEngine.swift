@@ -5,7 +5,13 @@ import Foundation
 struct MoodEngine: Sendable {
     private(set) var state = MoodState()
 
-    /// Windowed energy history for trajectory detection.
+    /// Short peak-hold buffer: tracks max energy over a beat-length window.
+    /// Percussive material (EDM kicks with gaps) has low average RMS but high peaks;
+    /// the peak envelope captures "how loud is this section" rather than "how loud is this instant."
+    private var peakHoldBuffer: [Double] = []
+    private static let peakHoldSize = 25 // ~530ms at 47Hz — covers one beat at ~114+ BPM
+
+    /// Windowed energy history for trajectory detection (uses peak envelope, not raw RMS).
     private var energyHistory: [Double] = []
     private static let energyHistorySize = 100 // ~2 seconds at 47Hz
 
@@ -24,14 +30,24 @@ struct MoodEngine: Sendable {
     mutating func update(musicalState: MusicalState, deltaTime: Double) {
         guard deltaTime > 0 else { return }
 
+        // Peak-hold envelope: max energy in a beat-length window.
+        // Percussive material (EDM kicks with gaps) has low average RMS but high peaks;
+        // one kick per beat keeps the envelope high even though most frames are quiet gaps.
+        peakHoldBuffer.append(musicalState.energy)
+        if peakHoldBuffer.count > Self.peakHoldSize {
+            peakHoldBuffer.removeFirst()
+        }
+        let peakEnergy = peakHoldBuffer.max() ?? musicalState.energy
+
         // EMA alpha from time constant: alpha = 1 - exp(-dt / tau)
         let excitementAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: 2.0)
         let valenceAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: 8.0)
         let brightnessAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: 3.0)
         let chaosAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: 4.0)
-        // Excitement: energy + normalized BPM (120 = neutral)
+
+        // Excitement: peak energy + normalized BPM (120 = neutral)
         let normalizedBPM = max(0, min(1, (musicalState.bpm - 60) / 140)) // 60-200 → 0-1
-        let excitementTarget = musicalState.energy * 0.6 + normalizedBPM * 0.4
+        let excitementTarget = peakEnergy * 0.6 + normalizedBPM * 0.4
         state.excitement = ema(current: state.excitement, target: excitementTarget, alpha: excitementAlpha)
 
         // Valence: major key → higher, minor key → lower
@@ -51,13 +67,15 @@ struct MoodEngine: Sendable {
         // Chaos: spectral flatness
         state.chaos = ema(current: state.chaos, target: musicalState.spectralFlatness, alpha: chaosAlpha)
 
-        // Intensity: raw energy — asymmetric EMA (fast attack, slow decay)
-        let intensityTau = musicalState.energy > state.intensity ? 0.3 : 4.0
-        let intensityAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: intensityTau)
-        state.intensity = ema(current: state.intensity, target: musicalState.energy, alpha: intensityAlpha)
+        state.peakEnergy = peakEnergy
 
-        // Energy trajectory
-        updateTrajectory(energy: musicalState.energy)
+        // Intensity: tracks peak envelope — asymmetric EMA (fast attack, slow decay)
+        let intensityTau = peakEnergy > state.intensity ? 0.3 : 4.0
+        let intensityAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: intensityTau)
+        state.intensity = ema(current: state.intensity, target: peakEnergy, alpha: intensityAlpha)
+
+        // Energy trajectory (also based on peak envelope)
+        updateTrajectory(energy: peakEnergy)
 
         // Bar counting
         if musicalState.isDownbeat {

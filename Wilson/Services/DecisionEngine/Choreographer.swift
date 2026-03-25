@@ -12,7 +12,7 @@ struct Choreographer: Sendable {
 
     private var groupingEngine = GroupingEngine()
     private var lastChangeTime: Double = 0
-    private var currentScenario: Scenario = .lowEnergy
+    private(set) var currentScenario: Scenario = .lowEnergy
     private var initialized = false
     /// Tracks which variety sub-variant to use within a scenario.
     private var varietyIndex = 0
@@ -65,29 +65,41 @@ struct Choreographer: Sendable {
     }
 
     private func classifyScenario(mood: MoodState) -> Scenario {
+        // Composite energy score: blends multiple mood dimensions so that
+        // bright, fast, chaotic music reads as high-energy even when raw
+        // volume/intensity is moderate (e.g. Sandstorm's drop sections).
+        let energyScore = mood.intensity * 0.35
+            + mood.excitement * 0.30
+            + mood.brightness * 0.20
+            + mood.chaos * 0.15
+
+        // Base scenario from composite score
+        let base: Scenario
+        if energyScore > 0.55 {
+            base = .highEnergy
+        } else if energyScore > 0.30 {
+            base = .mediumEnergy
+        } else {
+            base = .lowEnergy
+        }
+
+        // Trajectory modifies the base — it's a boost/tint, not the sole driver.
         switch mood.energyTrajectory {
         case .building:
-            return .building
-        case .declining:
-            // Only use declining behaviors when intensity is genuinely low.
-            // If we're declining from a high level, stay energetic.
-            if mood.intensity > 0.5 {
-                return .highEnergy
-            } else if mood.intensity > 0.3 {
-                return .mediumEnergy
-            } else {
-                return .declining
-            }
+            // Only use building behaviors when energy is at least moderate;
+            // a quiet fade-in shouldn't get the building treatment.
+            return base == .lowEnergy ? base : .building
         case .sustaining:
-            return mood.excitement > 0.55 ? .peakDrop : .highEnergy
-        case .stable:
-            if mood.intensity > 0.45 {
-                return .highEnergy
-            } else if mood.intensity > 0.2 {
-                return .mediumEnergy
-            } else {
-                return .lowEnergy
+            if energyScore > 0.50 && mood.excitement > 0.55 {
+                return .peakDrop
             }
+            return base == .lowEnergy ? .mediumEnergy : base
+        case .declining:
+            // Declining from a high level stays at whatever the composite says.
+            // Only use declining behaviors when the composite is truly low.
+            return base == .lowEnergy ? .declining : base
+        case .stable:
+            return base
         }
     }
 

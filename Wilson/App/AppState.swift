@@ -11,6 +11,7 @@ final class AppState {
     let dmxOutput = DMXOutputService()
     let virtualOutput = VirtualOutputService()
     let testAudioService = TestAudioService()
+    let telemetryRecorder = TelemetryRecorder()
 
     var isRunning = false
 
@@ -25,11 +26,18 @@ final class AppState {
         let fixtures = fixtureManager
         let virtual = virtualOutput
         let cues = cueService
+        let recorder = telemetryRecorder
         audioAnalysisService.onMusicalStateUpdate = { musicalState in
             engine.activePalette = cues.activePalette
             let currentFixtures = fixtures.fixtures
             engine.update(musicalState: musicalState, fixtures: currentFixtures)
             virtual.update(fixtureStates: engine.fixtureStates, fixtures: currentFixtures)
+            recorder.tick(
+                musicalState: musicalState,
+                mood: engine.currentMood,
+                scenario: engine.currentScenario,
+                slots: engine.activeSlotDescriptions
+            )
         }
     }
 }

@@ -11,7 +11,7 @@ struct EnergyAnalyzer: @unchecked Sendable {
 
     private var silentFrameCount: Int = 0
     private let silenceThreshold: Float = 0.001 // ~-60 dBFS
-    private let silenceFramesRequired: Int = 5   // ~100ms at 47 Hz analysis rate
+    private let silenceFramesRequired: Int = 25  // ~530ms at 47 Hz — tolerates percussive gaps in EDM drops
 
     /// Analyze time-domain samples and return energy metrics.
     mutating func analyze(_ samples: UnsafePointer<Float>, count: Int) -> Result {
