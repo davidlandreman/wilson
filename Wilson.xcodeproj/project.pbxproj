@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		025E4A236227BD64554D218E /* AudioDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4335C4D6C55FB975B781B45A /* AudioDebugView.swift */; };
+		06F3C09975EFC2423CAACBBD /* TestAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30496912902BB73F0D26E5 /* TestAudioService.swift */; };
 		0F0FCCB822ED6E834E61741D /* FixtureDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C229E5F7A1F59612A6BEBFB3 /* FixtureDefinition.swift */; };
 		1633DEA713D4EE32C63D8DBF /* DecisionEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */; };
 		2276ED5989DD9F172CA7E01F /* Fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF20F127C9436DDFB8A4976 /* Fixture.swift */; };
@@ -15,23 +16,29 @@
 		3585B984D13B999891A6C547 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0EAA08AD57A8AD3ED95BD348 /* Assets.xcassets */; };
 		3969BFD5E5A2D472727D7EDA /* CueService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1DDC62C405FAB0DF86EA3 /* CueService.swift */; };
 		3E28C5F1F26FD1866472C9CD /* WilsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C68BB924C98F5A13EB112B /* WilsonTests.swift */; };
+		41107FCA8A49B15D0723D05D /* StageSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DA62BF67046527149AC07B /* StageSceneCoordinator.swift */; };
 		45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */; };
 		4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A844464B464E6C6F04651AA3 /* DashboardView.swift */; };
 		53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017A399C0A8779816C5A2F65 /* DMXFrame.swift */; };
 		54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */; };
 		559E1766D2449B806B514ED4 /* VirtualFixtureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB31EBA73D9E8E3B26AFC0B /* VirtualFixtureView.swift */; };
 		59C11113EF6365A670E0770C /* VirtualOutputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719BD39896E804D1AE715887 /* VirtualOutputService.swift */; };
+		623C99CDA0C0B16CF57CEA4D /* StageMaterials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D2105436784A9CD54C80F0 /* StageMaterials.swift */; };
 		74C556662A4C8B32F6858950 /* MusicalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F00BBFE9999D285B82C15F4 /* MusicalState.swift */; };
 		7876ED0D61DB35ABFC8694CF /* ChromagramAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */; };
 		7B50EBAE6EE07AB84E5131A2 /* StageFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84599BDE06A4BD048191D9 /* StageFixture.swift */; };
 		7DF919E3E536C59EEB1A1031 /* LightDesignerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C672F2C193FF55199BC816 /* LightDesignerView.swift */; };
 		81030A3C16815BFAC8217620 /* WilsonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93AED515DAC28AB427A09E4 /* WilsonApp.swift */; };
 		836346D4FE70017AADCEBEDD /* TracerBulletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DFD136ACB72217B7A54A345 /* TracerBulletTests.swift */; };
+		93FF02B87F274DC056FB4C31 /* StageGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4F5C8751513239BE5F449 /* StageGeometry.swift */; };
+		9F1F3E9F67FEFD6C04B10D43 /* StageSceneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */; };
 		A45A735A9A42A9A9C25523E9 /* Cue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8877B2F11C8A5BC94C2B2532 /* Cue.swift */; };
+		A9124817F438357EF484AE60 /* FixtureSceneNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C5614333397C904FA31878 /* FixtureSceneNodes.swift */; };
 		A999C9117DA71F443C71EDA1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB96170AD830DFD81168DA2E /* AppState.swift */; };
 		AB3C1278A95855EECA792A45 /* OnsetDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */; };
 		B29183A3DAB5AE6CA793E61A /* DMXOutputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */; };
 		B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680653EC2893A552CD747147 /* FixtureManager.swift */; };
+		C09C0B7CABF275C8BFE51FF4 /* StageSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6B0075BAEEEE4FEFB25B97 /* StageSceneView.swift */; };
 		C759BFDC313819981A52771E /* FixtureState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A7CDC8AEE97A2EB2C49AF0 /* FixtureState.swift */; };
 		C926ED814C7480F0F8785F3A /* AudioAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */; };
 		CA96168956126E2C8B0BA5F3 /* BeatTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B164A7776115CB7706F3CC /* BeatTracker.swift */; };
@@ -57,16 +64,21 @@
 
 /* Begin PBXFileReference section */
 		017A399C0A8779816C5A2F65 /* DMXFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXFrame.swift; sourceTree = "<group>"; };
+		07C5614333397C904FA31878 /* FixtureSceneNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureSceneNodes.swift; sourceTree = "<group>"; };
 		0EAA08AD57A8AD3ED95BD348 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0FF4F5C8751513239BE5F449 /* StageGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageGeometry.swift; sourceTree = "<group>"; };
 		1BD6D77DBB932D124934B75E /* DSPPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSPPipeline.swift; sourceTree = "<group>"; };
 		289A35A7F72F231580CDCAB9 /* FFTEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFTEngine.swift; sourceTree = "<group>"; };
+		38D2105436784A9CD54C80F0 /* StageMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageMaterials.swift; sourceTree = "<group>"; };
 		3F00BBFE9999D285B82C15F4 /* MusicalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicalState.swift; sourceTree = "<group>"; };
 		423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromagramAnalyzer.swift; sourceTree = "<group>"; };
 		4335C4D6C55FB975B781B45A /* AudioDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDebugView.swift; sourceTree = "<group>"; };
 		4963A41F06E9F462AF096A0C /* FixtureCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureCatalog.swift; sourceTree = "<group>"; };
 		49E1F8610E96FE6AEAAEECBA /* VirtualStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualStageView.swift; sourceTree = "<group>"; };
 		4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnsetDetector.swift; sourceTree = "<group>"; };
+		4F6B0075BAEEEE4FEFB25B97 /* StageSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneView.swift; sourceTree = "<group>"; };
 		56B164A7776115CB7706F3CC /* BeatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTracker.swift; sourceTree = "<group>"; };
+		5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneTests.swift; sourceTree = "<group>"; };
 		62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAnalysisService.swift; sourceTree = "<group>"; };
 		638DAB193B0913BC4CEC4D48 /* Wilson.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wilson.entitlements; sourceTree = "<group>"; };
 		680653EC2893A552CD747147 /* FixtureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureManager.swift; sourceTree = "<group>"; };
@@ -82,6 +94,7 @@
 		8877B2F11C8A5BC94C2B2532 /* Cue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cue.swift; sourceTree = "<group>"; };
 		8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionEngineService.swift; sourceTree = "<group>"; };
 		8DB31EBA73D9E8E3B26AFC0B /* VirtualFixtureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualFixtureView.swift; sourceTree = "<group>"; };
+		8E30496912902BB73F0D26E5 /* TestAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAudioService.swift; sourceTree = "<group>"; };
 		9D84599BDE06A4BD048191D9 /* StageFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageFixture.swift; sourceTree = "<group>"; };
 		A8040E60C78EC2FAF89B8AB7 /* Wilson.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wilson.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A844464B464E6C6F04651AA3 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -93,6 +106,7 @@
 		C229E5F7A1F59612A6BEBFB3 /* FixtureDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureDefinition.swift; sourceTree = "<group>"; };
 		C93AED515DAC28AB427A09E4 /* WilsonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonApp.swift; sourceTree = "<group>"; };
 		D0C68BB924C98F5A13EB112B /* WilsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonTests.swift; sourceTree = "<group>"; };
+		D3DA62BF67046527149AC07B /* StageSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneCoordinator.swift; sourceTree = "<group>"; };
 		D6D0510E1433FFA967C6889A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E048E08585BF15D43EE746B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FFF20F127C9436DDFB8A4976 /* Fixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixture.swift; sourceTree = "<group>"; };
@@ -124,6 +138,11 @@
 		401EF2BC733DD8483AB44EFD /* VirtualStage */ = {
 			isa = PBXGroup;
 			children = (
+				07C5614333397C904FA31878 /* FixtureSceneNodes.swift */,
+				0FF4F5C8751513239BE5F449 /* StageGeometry.swift */,
+				38D2105436784A9CD54C80F0 /* StageMaterials.swift */,
+				D3DA62BF67046527149AC07B /* StageSceneCoordinator.swift */,
+				4F6B0075BAEEEE4FEFB25B97 /* StageSceneView.swift */,
 				8DB31EBA73D9E8E3B26AFC0B /* VirtualFixtureView.swift */,
 				49E1F8610E96FE6AEAAEECBA /* VirtualStageView.swift */,
 			);
@@ -148,6 +167,7 @@
 				6F0A1D55B61647DE3D8721AD /* DecisionEngine */,
 				66DF84CE54BAC1DC2052EC32 /* DMXOutput */,
 				5466C9025CCCE98DD0959D23 /* FixtureManagement */,
+				9D827A3C3D7F0CD2426C8316 /* TestAudio */,
 				77E89166D2D18ADAA2EFDCAC /* VirtualOutput */,
 			);
 			path = Services;
@@ -254,6 +274,14 @@
 			path = CueSystem;
 			sourceTree = "<group>";
 		};
+		9D827A3C3D7F0CD2426C8316 /* TestAudio */ = {
+			isa = PBXGroup;
+			children = (
+				8E30496912902BB73F0D26E5 /* TestAudioService.swift */,
+			);
+			path = TestAudio;
+			sourceTree = "<group>";
+		};
 		CC3DD286A64B2EF38EE78C78 /* AudioAnalysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -282,6 +310,7 @@
 			isa = PBXGroup;
 			children = (
 				81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */,
+				5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */,
 				7DFD136ACB72217B7A54A345 /* TracerBulletTests.swift */,
 				D0C68BB924C98F5A13EB112B /* WilsonTests.swift */,
 			);
@@ -384,6 +413,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2E5809E9FD650F2B7DAD071 /* AudioAnalysisTests.swift in Sources */,
+				9F1F3E9F67FEFD6C04B10D43 /* StageSceneTests.swift in Sources */,
 				836346D4FE70017AADCEBEDD /* TracerBulletTests.swift in Sources */,
 				3E28C5F1F26FD1866472C9CD /* WilsonTests.swift in Sources */,
 			);
@@ -414,6 +444,7 @@
 				E00FABE291AD209CE94B5BB7 /* FixtureCatalogSheet.swift in Sources */,
 				0F0FCCB822ED6E834E61741D /* FixtureDefinition.swift in Sources */,
 				B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */,
+				A9124817F438357EF484AE60 /* FixtureSceneNodes.swift in Sources */,
 				C759BFDC313819981A52771E /* FixtureState.swift in Sources */,
 				7DF919E3E536C59EEB1A1031 /* LightDesignerView.swift in Sources */,
 				74C556662A4C8B32F6858950 /* MusicalState.swift in Sources */,
@@ -421,6 +452,11 @@
 				54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */,
 				45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */,
 				7B50EBAE6EE07AB84E5131A2 /* StageFixture.swift in Sources */,
+				93FF02B87F274DC056FB4C31 /* StageGeometry.swift in Sources */,
+				623C99CDA0C0B16CF57CEA4D /* StageMaterials.swift in Sources */,
+				41107FCA8A49B15D0723D05D /* StageSceneCoordinator.swift in Sources */,
+				C09C0B7CABF275C8BFE51FF4 /* StageSceneView.swift in Sources */,
+				06F3C09975EFC2423CAACBBD /* TestAudioService.swift in Sources */,
 				559E1766D2449B806B514ED4 /* VirtualFixtureView.swift in Sources */,
 				59C11113EF6365A670E0770C /* VirtualOutputService.swift in Sources */,
 				342421959A9DD2A54E79B71B /* VirtualStageView.swift in Sources */,

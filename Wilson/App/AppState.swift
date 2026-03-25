@@ -10,12 +10,15 @@ final class AppState {
     let cueService = CueService()
     let dmxOutput = DMXOutputService()
     let virtualOutput = VirtualOutputService()
+    let testAudioService = TestAudioService()
 
     var isRunning = false
 
     init() {
-        // Wire audio capture → analysis pipeline
-        audioCaptureService.onAudioBuffer = audioAnalysisService.makeAudioBufferHandler()
+        // Wire audio sources → analysis pipeline (shared handler)
+        let audioHandler = audioAnalysisService.makeAudioBufferHandler()
+        audioCaptureService.onAudioBuffer = audioHandler
+        testAudioService.onAudioBuffer = audioHandler
 
         // Wire analysis → decision engine → virtual output pipeline
         let engine = decisionEngine

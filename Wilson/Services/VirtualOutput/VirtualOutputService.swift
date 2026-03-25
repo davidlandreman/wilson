@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import SwiftUI
 
@@ -5,9 +6,15 @@ import SwiftUI
 struct VirtualFixtureRenderState: Sendable {
     let fixtureID: UUID
     let position: SIMD2<Double>
+    let trussSlot: Int
     let color: Color
     let intensity: Double
     let label: String
+
+    /// Pre-resolved NSColor for SceneKit consumption.
+    var nsColor: NSColor {
+        NSColor(color)
+    }
 }
 
 /// Translates FixtureState values into visual render states for virtual fixtures.
@@ -26,6 +33,7 @@ final class VirtualOutputService {
             states[fixture.id] = VirtualFixtureRenderState(
                 fixtureID: fixture.id,
                 position: fixture.position,
+                trussSlot: fixture.trussSlot,
                 color: color,
                 intensity: fixtureState.dimmer,
                 label: fixture.label

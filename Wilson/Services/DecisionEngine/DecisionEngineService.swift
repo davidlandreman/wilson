@@ -7,16 +7,36 @@ import Foundation
 final class DecisionEngineService {
     private(set) var fixtureStates: [UUID: FixtureState] = [:]
 
+    /// Per-fixture manual overrides. When set, the override state is used
+    /// instead of computing from musical state.
+    private(set) var overrides: [UUID: FixtureState] = [:]
+
     /// Active cue parameters influencing behavior.
     var reactivity: Double = 0.5       // 0 = subtle, 1 = aggressive
     var movementIntensity: Double = 0.5
     var colorTemperature: Double = 0.5 // 0 = cool, 1 = warm
+
+    func setOverride(for fixtureID: UUID, state: FixtureState) {
+        overrides[fixtureID] = state
+        fixtureStates[fixtureID] = state
+    }
+
+    func removeOverride(for fixtureID: UUID) {
+        overrides.removeValue(forKey: fixtureID)
+        fixtureStates.removeValue(forKey: fixtureID)
+    }
 
     /// Generate fixture states based on current musical state and stage fixtures.
     func update(musicalState: MusicalState, fixtures: [StageFixture]) {
         var states: [UUID: FixtureState] = [:]
 
         for fixture in fixtures {
+            // Use override if present
+            if let override = overrides[fixture.id] {
+                states[fixture.id] = override
+                continue
+            }
+
             var state = FixtureState(fixtureID: fixture.id)
 
             if fixture.attributes.contains(.dimmer) {

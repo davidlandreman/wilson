@@ -9,6 +9,8 @@ struct StageFixture: Identifiable, Sendable {
     var dmxAddress: Int?
     var isVirtual: Bool
     var position: SIMD2<Double>
+    /// 0-based ordering index for center-out placement on the lighting truss.
+    var trussSlot: Int
 
     var attributes: Set<FixtureAttribute> { definition.attributes }
 
@@ -18,7 +20,8 @@ struct StageFixture: Identifiable, Sendable {
         definition: FixtureDefinition,
         dmxAddress: Int? = nil,
         isVirtual: Bool = true,
-        position: SIMD2<Double> = SIMD2(0.5, 0.5)
+        position: SIMD2<Double> = SIMD2(0.5, 0.5),
+        trussSlot: Int = 0
     ) {
         self.id = id
         self.label = label
@@ -26,5 +29,6 @@ struct StageFixture: Identifiable, Sendable {
         self.dmxAddress = dmxAddress
         self.isVirtual = isVirtual
         self.position = position
+        self.trussSlot = trussSlot
     }
 }

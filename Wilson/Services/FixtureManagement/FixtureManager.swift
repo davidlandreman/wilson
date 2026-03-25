@@ -12,7 +12,8 @@ final class FixtureManager {
             label: label,
             definition: definition,
             isVirtual: isVirtual,
-            position: nextPosition()
+            position: nextPosition(),
+            trussSlot: fixtures.count
         )
         fixtures.append(fixture)
         return fixture
@@ -21,6 +22,14 @@ final class FixtureManager {
     /// Remove a fixture by ID.
     func removeFixture(id: UUID) {
         fixtures.removeAll { $0.id == id }
+        reindexTrussSlots()
+    }
+
+    /// Reassign contiguous truss slots after a removal.
+    private func reindexTrussSlots() {
+        for i in fixtures.indices {
+            fixtures[i].trussSlot = i
+        }
     }
 
     /// Get all fixtures matching a set of attributes.
