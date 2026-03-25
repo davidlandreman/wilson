@@ -11,9 +11,9 @@ enum StageGeometry {
     static let trussSection: Float = 0.30 // cross-section width/height
     static let railRadius: Float = 0.04  // ~8cm diameter — visible from audience distance
 
-    static let beamHeight: Float = 3.15 // extends slightly into floor so cone meets spot pool
+    static let beamHeight: Float = 8.0 // long enough to reach floor at any tilt angle
     static let beamTopRadius: CGFloat = 0.02
-    static let beamBottomRadius: CGFloat = 0.55
+    static let beamBottomRadius: CGFloat = 1.4
 
     // MARK: - Stage Floor
 
@@ -154,6 +154,18 @@ enum StageGeometry {
         )
         cone.radialSegmentCount = 16
         let material = StageMaterials.beamMaterial()
+
+        // Fragment shader: soft edge falloff based on facing angle.
+        // Fragments facing the camera (center of cone) are bright.
+        // Fragments at grazing angles (edges) fade to zero — no hard edge.
+        material.shaderModifiers = [
+            .fragment: """
+            float facing = abs(_surface.normal.z);
+            float fade = pow(facing, 1.8);
+            _output.color.rgb *= fade;
+            """
+        ]
+
         cone.firstMaterial = material
 
         let node = SCNNode(geometry: cone)

@@ -4,6 +4,7 @@ import SceneKit
 /// Used only on @MainActor — contains non-Sendable SCNNode references.
 struct FixtureSceneNodes {
     let containerNode: SCNNode
+    let gimbalNode: SCNNode   // tilt rotation — parents body, spot, and beam
     let bodyNode: SCNNode
     let yokeNode: SCNNode
     let spotLight: SCNLight

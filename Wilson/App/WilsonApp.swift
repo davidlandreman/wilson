@@ -10,5 +10,11 @@ struct WilsonApp: App {
                 .environment(\.appState, appState)
         }
         .defaultSize(width: 1200, height: 800)
+
+        Window("Virtual Stage", id: "virtual-stage-fullscreen") {
+            FullScreenStageView()
+                .environment(\.appState, appState)
+        }
+        .defaultSize(width: 1920, height: 1080)
     }
 }

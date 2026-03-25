@@ -24,7 +24,9 @@ final class AppState {
         let engine = decisionEngine
         let fixtures = fixtureManager
         let virtual = virtualOutput
+        let cues = cueService
         audioAnalysisService.onMusicalStateUpdate = { musicalState in
+            engine.activePalette = cues.activePalette
             let currentFixtures = fixtures.fixtures
             engine.update(musicalState: musicalState, fixtures: currentFixtures)
             virtual.update(fixtureStates: engine.fixtureStates, fixtures: currentFixtures)

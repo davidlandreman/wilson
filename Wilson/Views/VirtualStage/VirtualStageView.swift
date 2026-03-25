@@ -2,6 +2,7 @@ import SwiftUI
 
 struct VirtualStageView: View {
     @Environment(\.appState) private var appState
+    @Environment(\.openWindow) private var openWindow
 
     private var virtualFixtures: [StageFixture] {
         appState.fixtureManager.fixtures.filter(\.isVirtual)
@@ -19,6 +20,34 @@ struct VirtualStageView: View {
                 fixtures: virtualFixtures,
                 renderStates: appState.virtualOutput.renderStates
             )
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        openWindow(id: "virtual-stage-fullscreen")
+                    } label: {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    }
+                    .help("Open Full Screen Stage")
+                }
+            }
         }
+    }
+}
+
+struct FullScreenStageView: View {
+    @Environment(\.appState) private var appState
+
+    private var virtualFixtures: [StageFixture] {
+        appState.fixtureManager.fixtures.filter(\.isVirtual)
+    }
+
+    var body: some View {
+        StageSceneView(
+            fixtures: virtualFixtures,
+            renderStates: appState.virtualOutput.renderStates
+        )
+        .ignoresSafeArea()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.black)
     }
 }

@@ -111,6 +111,15 @@ final class StageSceneCoordinator {
                 alpha: 1.0
             )
             nodes.beamMaterial.diffuse.contents = beamColor
+
+            // Update pan — rotates the container around Y axis
+            // 0.0 = full left, 0.5 = center (default), 1.0 = full right
+            let panAngle = (state.pan - 0.5) * 2.0 * .pi // ±π range
+            nodes.containerNode.eulerAngles.y = CGFloat(panAngle)
+
+            // Update tilt — rotates the gimbal node (body + spot + beam as a unit)
+            // 0.0 = straight down, 0.25 = 45° outward, 0.5 = horizontal
+            nodes.gimbalNode.eulerAngles.x = CGFloat(state.tilt * .pi)
         }
 
         SCNTransaction.commit()
@@ -122,35 +131,39 @@ final class StageSceneCoordinator {
         let container = SCNNode()
         container.name = "fixture_\(fixture.id.uuidString)"
 
-        // Yoke (hangs from truss)
+        // Yoke (hangs from truss — stays fixed, does not tilt)
         let (bodyNode, yokeNode) = StageGeometry.makeParCan()
         yokeNode.position = SCNVector3(0, -0.05, 0)
         container.addChildNode(yokeNode)
 
-        // Body (inside yoke) — SCNCone wide end (bottomRadius) is at -Y,
-        // which naturally points the open face downward. No rotation needed.
-        bodyNode.position = SCNVector3(0, -0.18, 0)
-        container.addChildNode(bodyNode)
+        // Gimbal node — rotates body, spot light, and beam as a unit for tilt
+        let gimbalNode = SCNNode()
+        gimbalNode.name = "gimbal"
+        gimbalNode.position = SCNVector3(0, -0.18, 0) // pivot at fixture center
+        container.addChildNode(gimbalNode)
 
-        // Spot light (points downward via eulerAngles in makeSpotLight)
+        // Body (inside gimbal)
+        bodyNode.position = SCNVector3(0, 0, 0)
+        gimbalNode.addChildNode(bodyNode)
+
+        // Spot light (inside gimbal, offset down from body)
         let (spotLightNode, spotLight) = StageGeometry.makeSpotLight()
-        spotLightNode.position = SCNVector3(0, -0.32, 0)
-        container.addChildNode(spotLightNode)
+        spotLightNode.position = SCNVector3(0, -0.14, 0)
+        gimbalNode.addChildNode(spotLightNode)
 
-        // Beam cone — SCNCone opens downward naturally (wide bottomRadius at -Y).
-        // Pivot is at the top (narrow end) so it hangs from the fixture position.
-        // No rotation needed — cone already extends downward.
+        // Beam cone (inside gimbal, same position as spot)
         let (beamConeNode, beamMaterial) = StageGeometry.makeBeamCone()
-        beamConeNode.position = SCNVector3(0, -0.32, 0)
-        container.addChildNode(beamConeNode)
+        beamConeNode.position = SCNVector3(0, -0.14, 0)
+        gimbalNode.addChildNode(beamConeNode)
 
-        // Glow light — positioned at the fixture body to illuminate the truss above
+        // Glow light (stays fixed on container, near truss)
         let (glowLightNode, glowLight) = StageGeometry.makeGlowLight()
-        glowLightNode.position = SCNVector3(0, 0.05, 0) // near the top, close to truss
+        glowLightNode.position = SCNVector3(0, 0.05, 0)
         container.addChildNode(glowLightNode)
 
         return FixtureSceneNodes(
             containerNode: container,
+            gimbalNode: gimbalNode,
             bodyNode: bodyNode,
             yokeNode: yokeNode,
             spotLight: spotLight,

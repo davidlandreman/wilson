@@ -9,6 +9,8 @@ struct VirtualFixtureRenderState: Sendable {
     let trussSlot: Int
     let color: Color
     let intensity: Double
+    let pan: Double
+    let tilt: Double
     let label: String
 
     /// Pre-resolved NSColor for SceneKit consumption.
@@ -36,6 +38,8 @@ final class VirtualOutputService {
                 trussSlot: fixture.trussSlot,
                 color: color,
                 intensity: fixtureState.dimmer,
+                pan: fixtureState.attributes[.pan] ?? 0.5,
+                tilt: fixtureState.attributes[.tilt] ?? 0.0,
                 label: fixture.label
             )
         }

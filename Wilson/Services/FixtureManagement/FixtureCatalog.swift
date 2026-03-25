@@ -23,5 +23,19 @@ enum FixtureCatalog {
         ]
     )
 
-    static let all: [FixtureDefinition] = [genericStrobe, genericRGBPar]
+    static let genericMovingHeadRGB = FixtureDefinition(
+        id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
+        name: "Generic Moving Head RGB",
+        manufacturer: "Generic",
+        channels: [
+            ChannelDefinition(offset: 0, attribute: .dimmer, defaultValue: 0),
+            ChannelDefinition(offset: 1, attribute: .red, defaultValue: 0),
+            ChannelDefinition(offset: 2, attribute: .green, defaultValue: 0),
+            ChannelDefinition(offset: 3, attribute: .blue, defaultValue: 0),
+            ChannelDefinition(offset: 4, attribute: .pan, defaultValue: 128),
+            ChannelDefinition(offset: 5, attribute: .tilt, defaultValue: 128),
+        ]
+    )
+
+    static let all: [FixtureDefinition] = [genericStrobe, genericRGBPar, genericMovingHeadRGB]
 }

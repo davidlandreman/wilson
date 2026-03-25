@@ -1,20 +1,44 @@
 import Foundation
 
 /// Translates MusicalState into per-fixture lighting states.
+/// Orchestrates a layered system: mood → choreographer → behaviors → compositing.
 /// Produces FixtureState values — the abstraction boundary between
 /// lighting decisions and output backends (DMX, virtual rendering).
 @Observable
 final class DecisionEngineService {
+    // MARK: - Output
+
     private(set) var fixtureStates: [UUID: FixtureState] = [:]
 
     /// Per-fixture manual overrides. When set, the override state is used
     /// instead of computing from musical state.
     private(set) var overrides: [UUID: FixtureState] = [:]
 
+    // MARK: - User-facing controls
+
     /// Active cue parameters influencing behavior.
     var reactivity: Double = 0.5       // 0 = subtle, 1 = aggressive
     var movementIntensity: Double = 0.5
     var colorTemperature: Double = 0.5 // 0 = cool, 1 = warm
+
+    /// Active color palette from CueService.
+    var activePalette: ColorPalette?
+
+    // MARK: - Observable debug state
+
+    private(set) var currentMood = MoodState()
+    private(set) var activeGroups: [FixtureGroup] = []
+    private(set) var activeSlotDescriptions: [String] = []
+
+    // MARK: - Internal subsystems
+
+    private var clock = EngineClock()
+    private var moodEngine = MoodEngine()
+    private var choreographer = Choreographer()
+    private var colorEngine = ColorEngine()
+    private var movementLimiter = MovementLimiter()
+
+    // MARK: - Override API
 
     func setOverride(for fixtureID: UUID, state: FixtureState) {
         overrides[fixtureID] = state
@@ -26,37 +50,99 @@ final class DecisionEngineService {
         fixtureStates.removeValue(forKey: fixtureID)
     }
 
+    // MARK: - Main update loop
+
     /// Generate fixture states based on current musical state and stage fixtures.
     func update(musicalState: MusicalState, fixtures: [StageFixture]) {
+        clock.tick()
+
+        // Layer 1: Update mood (slow EMA)
+        moodEngine.update(musicalState: musicalState, deltaTime: clock.deltaTime)
+        currentMood = moodEngine.state
+
+        // Layer 2: Choreographer decisions (conditional, not every frame)
+        choreographer.evaluate(
+            musicalState: musicalState,
+            mood: moodEngine.state,
+            fixtures: fixtures,
+            time: clock.time
+        )
+        activeGroups = choreographer.groups
+        activeSlotDescriptions = choreographer.slots.map {
+            "\(type(of: $0.behavior).id) → \($0.groupID.uuidString.prefix(4))"
+        }
+
+        // Sync bar counter from mood engine to choreographer
+        choreographer.barCounter = moodEngine.barCounter
+
+        // Layer 3: Resolve palette and build context
+        let resolvedPalette = colorEngine.resolve(
+            palette: activePalette,
+            mood: moodEngine.state,
+            musicalState: musicalState
+        )
+
+        // Layer 4: Run all active behaviors and composite output
+        var composited: [UUID: [FixtureAttribute: Double]] = [:]
+
+        for slot in choreographer.slots {
+            guard let group = choreographer.groups.first(where: { $0.id == slot.groupID }) else {
+                continue
+            }
+            let groupFixtures = fixtures.filter { group.fixtureIDs.contains($0.id) }
+            guard !groupFixtures.isEmpty else { continue }
+
+            let context = BehaviorContext(
+                musicalState: musicalState,
+                moodState: moodEngine.state,
+                palette: resolvedPalette,
+                beat: BeatContext(from: musicalState, phraseCounter: choreographer.barCounter),
+                time: clock.time,
+                deltaTime: clock.deltaTime,
+                reactivity: reactivity,
+                movementIntensity: movementIntensity,
+                parameters: slot.parameters
+            )
+
+            let slotOutput = slot.behavior.evaluate(fixtures: groupFixtures, context: context)
+
+            // Composite with HTP (highest takes precedence) weighted by slot
+            for (fixtureID, attrs) in slotOutput {
+                for (attr, value) in attrs {
+                    let weighted = value * slot.weight
+                    if let existing = composited[fixtureID]?[attr] {
+                        composited[fixtureID]?[attr] = max(existing, weighted)
+                    } else {
+                        composited[fixtureID, default: [:]][attr] = weighted
+                    }
+                }
+            }
+        }
+
+        // Layer 5: Build final fixture states
         var states: [UUID: FixtureState] = [:]
 
         for fixture in fixtures {
-            // Use override if present
+            // Manual overrides take precedence
             if let override = overrides[fixture.id] {
                 states[fixture.id] = override
                 continue
             }
 
             var state = FixtureState(fixtureID: fixture.id)
-
-            if fixture.attributes.contains(.dimmer) {
-                // Beat-reactive strobe: full on at beat, cubic decay between beats
-                if musicalState.isSilent {
-                    state.attributes[.dimmer] = 0
-                } else if musicalState.isBeat {
-                    state.attributes[.dimmer] = 1.0
-                } else {
-                    let decay = 1.0 - musicalState.beatPhase
-                    state.attributes[.dimmer] = decay * decay * decay
-                }
+            if let attrs = composited[fixture.id] {
+                state.attributes = attrs
             }
 
-            // RGB fixtures get white on strobe for now
-            if fixture.attributes.contains(.red) {
-                let intensity = state.dimmer
-                state.attributes[.red] = intensity
-                state.attributes[.green] = intensity
-                state.attributes[.blue] = intensity
+            // Apply movement slew-rate limiting
+            if fixture.attributes.contains(.pan) || fixture.attributes.contains(.tilt) {
+                let previous = fixtureStates[fixture.id]
+                movementLimiter.apply(to: &state, previous: previous, deltaTime: clock.deltaTime)
+            }
+
+            // Silence safety: dim everything to 0
+            if musicalState.isSilent {
+                state.attributes[.dimmer] = 0
             }
 
             states[fixture.id] = state

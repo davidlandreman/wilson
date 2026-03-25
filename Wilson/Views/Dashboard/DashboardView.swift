@@ -106,12 +106,12 @@ struct DashboardView: View {
                     let hasTestFixtures = appState.fixtureManager.fixtures.contains { $0.label.hasPrefix("Test ") }
 
                     Button("Add Test Fixtures") {
+                        // Center fixtures — white, pointing straight down
                         for def in FixtureCatalog.all {
                             let fixture = appState.fixtureManager.addFixture(
                                 definition: def,
                                 label: "Test \(def.name)"
                             )
-                            // Override to full brightness so they're always on
                             var state = FixtureState(fixtureID: fixture.id)
                             state.attributes[.dimmer] = 1.0
                             if fixture.attributes.contains(.red) {
@@ -121,6 +121,22 @@ struct DashboardView: View {
                             }
                             appState.decisionEngine.setOverride(for: fixture.id, state: state)
                         }
+
+                        // Edge wash fixtures — blue, angled 45° toward audience
+                        for i in 1...2 {
+                            let fixture = appState.fixtureManager.addFixture(
+                                definition: FixtureCatalog.genericRGBPar,
+                                label: "Test Blue Wash \(i)"
+                            )
+                            var state = FixtureState(fixtureID: fixture.id)
+                            state.attributes[.dimmer] = 1.5
+                            state.attributes[.red] = 0.05
+                            state.attributes[.green] = 0.15
+                            state.attributes[.blue] = 1.0
+                            state.attributes[.tilt] = -0.25 // 45° toward audience
+                            appState.decisionEngine.setOverride(for: fixture.id, state: state)
+                        }
+
                         // Push to virtual output so lights appear without audio
                         appState.virtualOutput.update(
                             fixtureStates: appState.decisionEngine.fixtureStates,
