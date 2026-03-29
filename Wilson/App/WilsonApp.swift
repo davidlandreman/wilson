@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 @main
@@ -10,6 +11,13 @@ struct WilsonApp: App {
                 .environment(\.appState, appState)
         }
         .defaultSize(width: 1200, height: 800)
+        .modelContainer(for: [
+            DMXScene.self,
+            FixtureProfile.self,
+            PatchedFixture.self,
+            Cue.self,
+            ColorPalette.self,
+        ])
 
         Window("Virtual Stage", id: "virtual-stage-fullscreen") {
             FullScreenStageView()

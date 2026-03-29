@@ -27,6 +27,8 @@ final class TelemetryRecorder {
         let sample = Sample(
             t: round(elapsed * 10) / 10,
             energy: musicalState.energy,
+            rawEnergy: musicalState.rawEnergy,
+            normCeiling: musicalState.normalizationCeiling,
             peakEnergy: mood.peakEnergy,
             intensity: mood.intensity,
             excitement: mood.excitement,
@@ -88,7 +90,9 @@ final class TelemetryRecorder {
 
     struct Sample: Codable {
         let t: Double             // seconds since recording start
-        let energy: Double        // raw RMS
+        let energy: Double        // normalized energy (0-1)
+        let rawEnergy: Double     // pre-normalization RMS
+        let normCeiling: Double   // adaptive normalization ceiling
         let peakEnergy: Double    // peak-hold envelope
         let intensity: Double     // smoothed (asymmetric EMA)
         let excitement: Double

@@ -25,8 +25,14 @@ struct MusicalState: Sendable {
 
     // MARK: - Energy & Dynamics
 
-    /// Overall energy level (0.0 = silence, 1.0 = maximum).
+    /// Overall energy level, adaptively normalized to 0.0–1.0.
     var energy: Double = 0
+
+    /// Pre-normalization RMS energy (for debug/telemetry).
+    var rawEnergy: Double = 0
+
+    /// Current adaptive normalization ceiling (for debug/telemetry).
+    var normalizationCeiling: Double = 0
 
     /// Instantaneous peak amplitude (0.0–1.0).
     var peakLevel: Double = 0

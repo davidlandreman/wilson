@@ -70,7 +70,7 @@ struct MoodEngine: Sendable {
         state.peakEnergy = peakEnergy
 
         // Intensity: tracks peak envelope — asymmetric EMA (fast attack, slow decay)
-        let intensityTau = peakEnergy > state.intensity ? 0.3 : 4.0
+        let intensityTau = peakEnergy > state.intensity ? 0.3 : 2.0
         let intensityAlpha = emaAlpha(deltaTime: deltaTime, timeConstant: intensityTau)
         state.intensity = ema(current: state.intensity, target: peakEnergy, alpha: intensityAlpha)
 
@@ -108,7 +108,7 @@ struct MoodEngine: Sendable {
             rawTrajectory = .building
         } else if diff < -0.05 {
             rawTrajectory = .declining
-        } else if recentAvg > 0.4 {
+        } else if recentAvg > 0.55 {
             rawTrajectory = .sustaining
         } else {
             rawTrajectory = .stable

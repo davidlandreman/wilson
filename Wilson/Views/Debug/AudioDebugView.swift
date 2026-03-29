@@ -103,7 +103,7 @@ struct AudioDebugView: View {
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
                 GridRow {
                     Text("Energy").fontWeight(.medium)
-                    ProgressView(value: min(state.energy * 3, 1.0))
+                    ProgressView(value: min(state.energy, 1.0))
                         .frame(width: 140)
                     Text(String(format: "%.3f", state.energy))
                         .monospacedDigit().foregroundStyle(.secondary)

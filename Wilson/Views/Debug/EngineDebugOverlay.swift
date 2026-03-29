@@ -47,7 +47,7 @@ struct EngineDebugOverlay: View {
 
             // Energy pipeline
             HStack(spacing: 12) {
-                label("RMS", value: ms.energy, color: .blue)
+                label("Energy", value: ms.energy, color: .blue)
                 label("Peak", value: mood.peakEnergy, color: .cyan)
                 label("Intensity", value: mood.intensity, color: .green)
             }
@@ -59,6 +59,12 @@ struct EngineDebugOverlay: View {
                 bar(value: mood.intensity, color: .green)
             }
             .frame(height: 6)
+
+            // Normalization debug
+            HStack(spacing: 12) {
+                label("Raw", value: ms.rawEnergy, color: .gray)
+                label("Ceil", value: ms.normalizationCeiling, color: .gray)
+            }
 
             Divider().overlay(Color.white.opacity(0.2))
 

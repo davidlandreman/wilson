@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020425E6F2E7989A31685AA5 /* TiltSweepBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DFE39EC329F1DB3CEF5B16 /* TiltSweepBehavior.swift */; };
 		025E4A236227BD64554D218E /* AudioDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4335C4D6C55FB975B781B45A /* AudioDebugView.swift */; };
 		06F3C09975EFC2423CAACBBD /* TestAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30496912902BB73F0D26E5 /* TestAudioService.swift */; };
+		0CBB802AFF4C12D6A267EC54 /* DMXScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7895FB9760B896FC38858D /* DMXScene.swift */; };
 		0DCEDBF76D11BB811E2F863A /* BreatheBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6CF91286883D77967C2412 /* BreatheBehavior.swift */; };
 		0F0FCCB822ED6E834E61741D /* FixtureDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C229E5F7A1F59612A6BEBFB3 /* FixtureDefinition.swift */; };
 		11527726883C21D6213661CE /* ChaseBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03181DDCD678F005B13C1308 /* ChaseBehavior.swift */; };
@@ -27,6 +29,7 @@
 		41107FCA8A49B15D0723D05D /* StageSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DA62BF67046527149AC07B /* StageSceneCoordinator.swift */; };
 		45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */; };
 		46587113B0057FFA393339E1 /* TelemetryRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5FB61B1C11487ED1A94A85 /* TelemetryRecorder.swift */; };
+		4A210165888AB36B0551EA7B /* AdaptiveEnergyNormalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B0FE26139CAFFC06084AF5 /* AdaptiveEnergyNormalizerTests.swift */; };
 		4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A844464B464E6C6F04651AA3 /* DashboardView.swift */; };
 		53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017A399C0A8779816C5A2F65 /* DMXFrame.swift */; };
 		54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */; };
@@ -44,7 +47,10 @@
 		7DF919E3E536C59EEB1A1031 /* LightDesignerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C672F2C193FF55199BC816 /* LightDesignerView.swift */; };
 		81030A3C16815BFAC8217620 /* WilsonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93AED515DAC28AB427A09E4 /* WilsonApp.swift */; };
 		836346D4FE70017AADCEBEDD /* TracerBulletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DFD136ACB72217B7A54A345 /* TracerBulletTests.swift */; };
+		83ABB2974CCD486C57DFF6AC /* VerticalFaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F5C6F9ECE1B05008E14D6A /* VerticalFaderView.swift */; };
+		83F77200F277116A863D02E8 /* ChannelFaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BA759AF5AB531074E9122F /* ChannelFaderView.swift */; };
 		8D66A6BEDD3886B0F236380A /* FixtureGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = E103E235F8DFC78C1A8EE3E4 /* FixtureGroup.swift */; };
+		902BD39A1388869834A5D6A9 /* FixtureFaderStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AECB7CC017271CFE0B121B8 /* FixtureFaderStripView.swift */; };
 		92E5E8BD24DE2766919E343A /* MusicalKey+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98A3B6FAE4F868B1305549F6 /* MusicalKey+Color.swift */; };
 		93FF02B87F274DC056FB4C31 /* StageGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF4F5C8751513239BE5F449 /* StageGeometry.swift */; };
 		97183F12B4C4E5807A29CC11 /* MovementLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D111EF534A5B29B507C3487 /* MovementLimiter.swift */; };
@@ -55,6 +61,7 @@
 		AB3C1278A95855EECA792A45 /* OnsetDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */; };
 		AB49C2EFA65339248E2CDE0A /* TiltBounceBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B17932CD06D4A6B11FB28DB /* TiltBounceBehavior.swift */; };
 		B29183A3DAB5AE6CA793E61A /* DMXOutputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */; };
+		B307A2480A106B0BB4ADBF33 /* ControllerToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90CC2DB14C6A506F3A041E10 /* ControllerToolbarView.swift */; };
 		B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680653EC2893A552CD747147 /* FixtureManager.swift */; };
 		B8BB552EEE75AA4F00FCB462 /* StrobeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05687FC23C6A1F0866D807A /* StrobeBehavior.swift */; };
 		C09C0B7CABF275C8BFE51FF4 /* StageSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6B0075BAEEEE4FEFB25B97 /* StageSceneView.swift */; };
@@ -72,7 +79,11 @@
 		F23F433123FA06148299A3D2 /* BlackoutAccentBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064CE256E99995F8663404C2 /* BlackoutAccentBehavior.swift */; };
 		F37DC40AC6DE4314312297D5 /* FixtureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4963A41F06E9F462AF096A0C /* FixtureCatalog.swift */; };
 		F4C15784D3B8C31E344A38AE /* ColorWashBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D63A6C67BE7D58C2CC2F35 /* ColorWashBehavior.swift */; };
+		F66D5962F509F883510D0748 /* DMXControllerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7F52389C9C40CD3CD25745 /* DMXControllerService.swift */; };
+		F98841AF24E6829464DB598D /* DMXControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FABBD1BDAB418F2998D839 /* DMXControllerView.swift */; };
 		F98EE2E5AEFD60B2417D6007 /* LightColor+Interpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FD7BB14F45F35C878F8B0 /* LightColor+Interpolation.swift */; };
+		F9C40680DF081D2091D8A37E /* RandomLookBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D71F92BCA22336F9F99F8A3 /* RandomLookBehavior.swift */; };
+		FAFF7C02EE08D1270D5082E2 /* AdaptiveEnergyNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32399E23BC210DCDBA80FAA1 /* AdaptiveEnergyNormalizer.swift */; };
 		FBC83C01E152FB05B0F5835B /* AudioCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 730987D1CE95B292649246FF /* AudioCaptureService.swift */; };
 		FF0108293FF7732D7A89E3E9 /* DSPPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD6D77DBB932D124934B75E /* DSPPipeline.swift */; };
 /* End PBXBuildFile section */
@@ -99,18 +110,22 @@
 		1BD6D77DBB932D124934B75E /* DSPPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSPPipeline.swift; sourceTree = "<group>"; };
 		1D111EF534A5B29B507C3487 /* MovementLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementLimiter.swift; sourceTree = "<group>"; };
 		289A35A7F72F231580CDCAB9 /* FFTEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFTEngine.swift; sourceTree = "<group>"; };
+		2AECB7CC017271CFE0B121B8 /* FixtureFaderStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureFaderStripView.swift; sourceTree = "<group>"; };
+		32399E23BC210DCDBA80FAA1 /* AdaptiveEnergyNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveEnergyNormalizer.swift; sourceTree = "<group>"; };
 		38D2105436784A9CD54C80F0 /* StageMaterials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageMaterials.swift; sourceTree = "<group>"; };
 		3E27AC8343FFEFFF9153B898 /* SpectralColorBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectralColorBehavior.swift; sourceTree = "<group>"; };
 		3F00BBFE9999D285B82C15F4 /* MusicalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicalState.swift; sourceTree = "<group>"; };
 		40223F261EB45EE645500E72 /* EngineDebugOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineDebugOverlay.swift; sourceTree = "<group>"; };
 		423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromagramAnalyzer.swift; sourceTree = "<group>"; };
 		4335C4D6C55FB975B781B45A /* AudioDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDebugView.swift; sourceTree = "<group>"; };
+		43DFE39EC329F1DB3CEF5B16 /* TiltSweepBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiltSweepBehavior.swift; sourceTree = "<group>"; };
 		457FD7BB14F45F35C878F8B0 /* LightColor+Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LightColor+Interpolation.swift"; sourceTree = "<group>"; };
 		4963A41F06E9F462AF096A0C /* FixtureCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureCatalog.swift; sourceTree = "<group>"; };
 		49E1F8610E96FE6AEAAEECBA /* VirtualStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualStageView.swift; sourceTree = "<group>"; };
 		4E9FF7BEB00E1E18C098020E /* ColorSplitBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSplitBehavior.swift; sourceTree = "<group>"; };
 		4EE8A1D317633ED05AA283F2 /* OnsetDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnsetDetector.swift; sourceTree = "<group>"; };
 		4F6B0075BAEEEE4FEFB25B97 /* StageSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneView.swift; sourceTree = "<group>"; };
+		51FABBD1BDAB418F2998D839 /* DMXControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXControllerView.swift; sourceTree = "<group>"; };
 		56B164A7776115CB7706F3CC /* BeatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTracker.swift; sourceTree = "<group>"; };
 		5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneTests.swift; sourceTree = "<group>"; };
 		5B17932CD06D4A6B11FB28DB /* TiltBounceBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiltBounceBehavior.swift; sourceTree = "<group>"; };
@@ -121,6 +136,7 @@
 		638DAB193B0913BC4CEC4D48 /* Wilson.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wilson.entitlements; sourceTree = "<group>"; };
 		680653EC2893A552CD747147 /* FixtureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureManager.swift; sourceTree = "<group>"; };
 		6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXOutputService.swift; sourceTree = "<group>"; };
+		6D71F92BCA22336F9F99F8A3 /* RandomLookBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomLookBehavior.swift; sourceTree = "<group>"; };
 		719BD39896E804D1AE715887 /* VirtualOutputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualOutputService.swift; sourceTree = "<group>"; };
 		721012FB9EABB73E7E4F98EC /* EnergyAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyAnalyzer.swift; sourceTree = "<group>"; };
 		730987D1CE95B292649246FF /* AudioCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureService.swift; sourceTree = "<group>"; };
@@ -133,12 +149,15 @@
 		8D20517AAAE1EAC51CDF22D4 /* DecisionEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionEngineService.swift; sourceTree = "<group>"; };
 		8DB31EBA73D9E8E3B26AFC0B /* VirtualFixtureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualFixtureView.swift; sourceTree = "<group>"; };
 		8E30496912902BB73F0D26E5 /* TestAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAudioService.swift; sourceTree = "<group>"; };
+		90CC2DB14C6A506F3A041E10 /* ControllerToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerToolbarView.swift; sourceTree = "<group>"; };
 		90CC86618FDF62AC61E8E4EE /* ColorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorEngine.swift; sourceTree = "<group>"; };
 		98A3B6FAE4F868B1305549F6 /* MusicalKey+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicalKey+Color.swift"; sourceTree = "<group>"; };
+		99F5C6F9ECE1B05008E14D6A /* VerticalFaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalFaderView.swift; sourceTree = "<group>"; };
 		9C6CF91286883D77967C2412 /* BreatheBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreatheBehavior.swift; sourceTree = "<group>"; };
 		9D84599BDE06A4BD048191D9 /* StageFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageFixture.swift; sourceTree = "<group>"; };
 		9E5FB61B1C11487ED1A94A85 /* TelemetryRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryRecorder.swift; sourceTree = "<group>"; };
 		9F8A41F01F3A15CA136F73F7 /* Behavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Behavior.swift; sourceTree = "<group>"; };
+		A6BA759AF5AB531074E9122F /* ChannelFaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelFaderView.swift; sourceTree = "<group>"; };
 		A8040E60C78EC2FAF89B8AB7 /* Wilson.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wilson.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A844464B464E6C6F04651AA3 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		AAC1DDC62C405FAB0DF86EA3 /* CueService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CueService.swift; sourceTree = "<group>"; };
@@ -147,8 +166,10 @@
 		B3C672F2C193FF55199BC816 /* LightDesignerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightDesignerView.swift; sourceTree = "<group>"; };
 		BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
 		BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectralAnalyzer.swift; sourceTree = "<group>"; };
+		C1B0FE26139CAFFC06084AF5 /* AdaptiveEnergyNormalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveEnergyNormalizerTests.swift; sourceTree = "<group>"; };
 		C229E5F7A1F59612A6BEBFB3 /* FixtureDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureDefinition.swift; sourceTree = "<group>"; };
 		C93AED515DAC28AB427A09E4 /* WilsonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonApp.swift; sourceTree = "<group>"; };
+		CB7F52389C9C40CD3CD25745 /* DMXControllerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXControllerService.swift; sourceTree = "<group>"; };
 		D0C68BB924C98F5A13EB112B /* WilsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WilsonTests.swift; sourceTree = "<group>"; };
 		D3DA62BF67046527149AC07B /* StageSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageSceneCoordinator.swift; sourceTree = "<group>"; };
 		D6D0510E1433FFA967C6889A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -158,6 +179,7 @@
 		E05687FC23C6A1F0866D807A /* StrobeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrobeBehavior.swift; sourceTree = "<group>"; };
 		E103E235F8DFC78C1A8EE3E4 /* FixtureGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureGroup.swift; sourceTree = "<group>"; };
 		F4760DCAC878E679FA2EEFF4 /* MoodState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodState.swift; sourceTree = "<group>"; };
+		FA7895FB9760B896FC38858D /* DMXScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXScene.swift; sourceTree = "<group>"; };
 		FE246F6703A9FDF8BF616663 /* BeatPulseBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPulseBehavior.swift; sourceTree = "<group>"; };
 		FFF20F127C9436DDFB8A4976 /* Fixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -215,6 +237,7 @@
 				3C6046182E19DBC1FB996F79 /* AudioCapture */,
 				9C8EF7BF8EA6F967415169C4 /* CueSystem */,
 				6F0A1D55B61647DE3D8721AD /* DecisionEngine */,
+				B5C49C37A1DFFBFC8577AE14 /* DMXController */,
 				66DF84CE54BAC1DC2052EC32 /* DMXOutput */,
 				5466C9025CCCE98DD0959D23 /* FixtureManagement */,
 				9D827A3C3D7F0CD2426C8316 /* TestAudio */,
@@ -232,11 +255,24 @@
 			path = FixtureManagement;
 			sourceTree = "<group>";
 		};
+		56DEF4DFCF8EBB05E7BA1CEB /* DMXController */ = {
+			isa = PBXGroup;
+			children = (
+				A6BA759AF5AB531074E9122F /* ChannelFaderView.swift */,
+				90CC2DB14C6A506F3A041E10 /* ControllerToolbarView.swift */,
+				51FABBD1BDAB418F2998D839 /* DMXControllerView.swift */,
+				2AECB7CC017271CFE0B121B8 /* FixtureFaderStripView.swift */,
+				99F5C6F9ECE1B05008E14D6A /* VerticalFaderView.swift */,
+			);
+			path = DMXController;
+			sourceTree = "<group>";
+		};
 		649BB06052A90B273A4256E0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				CDFCAB20BAE2BC3A8EE26E98 /* Dashboard */,
 				79C5DF70DCB0E77CADDC2FA3 /* Debug */,
+				56DEF4DFCF8EBB05E7BA1CEB /* DMXController */,
 				F771890B267D8BC40A831E53 /* LightDesigner */,
 				401EF2BC733DD8483AB44EFD /* VirtualStage */,
 			);
@@ -274,6 +310,7 @@
 			children = (
 				8877B2F11C8A5BC94C2B2532 /* Cue.swift */,
 				017A399C0A8779816C5A2F65 /* DMXFrame.swift */,
+				FA7895FB9760B896FC38858D /* DMXScene.swift */,
 				FFF20F127C9436DDFB8A4976 /* Fixture.swift */,
 				C229E5F7A1F59612A6BEBFB3 /* FixtureDefinition.swift */,
 				79A7CDC8AEE97A2EB2C49AF0 /* FixtureState.swift */,
@@ -347,9 +384,18 @@
 			path = TestAudio;
 			sourceTree = "<group>";
 		};
+		B5C49C37A1DFFBFC8577AE14 /* DMXController */ = {
+			isa = PBXGroup;
+			children = (
+				CB7F52389C9C40CD3CD25745 /* DMXControllerService.swift */,
+			);
+			path = DMXController;
+			sourceTree = "<group>";
+		};
 		CC3DD286A64B2EF38EE78C78 /* AudioAnalysis */ = {
 			isa = PBXGroup;
 			children = (
+				32399E23BC210DCDBA80FAA1 /* AdaptiveEnergyNormalizer.swift */,
 				62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */,
 				56B164A7776115CB7706F3CC /* BeatTracker.swift */,
 				423378397700EE14F5D341A3 /* ChromagramAnalyzer.swift */,
@@ -382,9 +428,11 @@
 				06D63A6C67BE7D58C2CC2F35 /* ColorWashBehavior.swift */,
 				DEC18A788496C75992581E05 /* MovementPatternBehavior.swift */,
 				AD5B6E23A31A13E0042BD240 /* PanSweepBehavior.swift */,
+				6D71F92BCA22336F9F99F8A3 /* RandomLookBehavior.swift */,
 				3E27AC8343FFEFFF9153B898 /* SpectralColorBehavior.swift */,
 				E05687FC23C6A1F0866D807A /* StrobeBehavior.swift */,
 				5B17932CD06D4A6B11FB28DB /* TiltBounceBehavior.swift */,
+				43DFE39EC329F1DB3CEF5B16 /* TiltSweepBehavior.swift */,
 			);
 			path = Behaviors;
 			sourceTree = "<group>";
@@ -392,6 +440,7 @@
 		E9188B2718C5169C1BFCC057 /* WilsonTests */ = {
 			isa = PBXGroup;
 			children = (
+				C1B0FE26139CAFFC06084AF5 /* AdaptiveEnergyNormalizerTests.swift */,
 				81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */,
 				5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */,
 				7DFD136ACB72217B7A54A345 /* TracerBulletTests.swift */,
@@ -495,6 +544,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A210165888AB36B0551EA7B /* AdaptiveEnergyNormalizerTests.swift in Sources */,
 				E2E5809E9FD650F2B7DAD071 /* AudioAnalysisTests.swift in Sources */,
 				9F1F3E9F67FEFD6C04B10D43 /* StageSceneTests.swift in Sources */,
 				836346D4FE70017AADCEBEDD /* TracerBulletTests.swift in Sources */,
@@ -506,6 +556,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAFF7C02EE08D1270D5082E2 /* AdaptiveEnergyNormalizer.swift in Sources */,
 				A999C9117DA71F443C71EDA1 /* AppState.swift in Sources */,
 				C926ED814C7480F0F8785F3A /* AudioAnalysisService.swift in Sources */,
 				FBC83C01E152FB05B0F5835B /* AudioCaptureService.swift in Sources */,
@@ -517,6 +568,7 @@
 				21584EACFCB4DF321D149B62 /* BehaviorSlot.swift in Sources */,
 				F23F433123FA06148299A3D2 /* BlackoutAccentBehavior.swift in Sources */,
 				0DCEDBF76D11BB811E2F863A /* BreatheBehavior.swift in Sources */,
+				83F77200F277116A863D02E8 /* ChannelFaderView.swift in Sources */,
 				11527726883C21D6213661CE /* ChaseBehavior.swift in Sources */,
 				DF98829A6D3760DF8F13CCCA /* Choreographer.swift in Sources */,
 				7876ED0D61DB35ABFC8694CF /* ChromagramAnalyzer.swift in Sources */,
@@ -524,10 +576,14 @@
 				7545605DD543AAA2483E83F3 /* ColorSplitBehavior.swift in Sources */,
 				F4C15784D3B8C31E344A38AE /* ColorWashBehavior.swift in Sources */,
 				F1246AA1783C3914304E9A9E /* ContentView.swift in Sources */,
+				B307A2480A106B0BB4ADBF33 /* ControllerToolbarView.swift in Sources */,
 				A45A735A9A42A9A9C25523E9 /* Cue.swift in Sources */,
 				3969BFD5E5A2D472727D7EDA /* CueService.swift in Sources */,
+				F66D5962F509F883510D0748 /* DMXControllerService.swift in Sources */,
+				F98841AF24E6829464DB598D /* DMXControllerView.swift in Sources */,
 				53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */,
 				B29183A3DAB5AE6CA793E61A /* DMXOutputService.swift in Sources */,
+				0CBB802AFF4C12D6A267EC54 /* DMXScene.swift in Sources */,
 				FF0108293FF7732D7A89E3E9 /* DSPPipeline.swift in Sources */,
 				4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */,
 				1633DEA713D4EE32C63D8DBF /* DecisionEngineService.swift in Sources */,
@@ -539,6 +595,7 @@
 				F37DC40AC6DE4314312297D5 /* FixtureCatalog.swift in Sources */,
 				E00FABE291AD209CE94B5BB7 /* FixtureCatalogSheet.swift in Sources */,
 				0F0FCCB822ED6E834E61741D /* FixtureDefinition.swift in Sources */,
+				902BD39A1388869834A5D6A9 /* FixtureFaderStripView.swift in Sources */,
 				8D66A6BEDD3886B0F236380A /* FixtureGroup.swift in Sources */,
 				B4F2F5FD0DF4BA5E2D5C2025 /* FixtureManager.swift in Sources */,
 				A9124817F438357EF484AE60 /* FixtureSceneNodes.swift in Sources */,
@@ -553,6 +610,7 @@
 				74C556662A4C8B32F6858950 /* MusicalState.swift in Sources */,
 				AB3C1278A95855EECA792A45 /* OnsetDetector.swift in Sources */,
 				31616630967ABA8F88B4FAFC /* PanSweepBehavior.swift in Sources */,
+				F9C40680DF081D2091D8A37E /* RandomLookBehavior.swift in Sources */,
 				54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */,
 				45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */,
 				E8339DE2267BB6533FACA57C /* SpectralColorBehavior.swift in Sources */,
@@ -565,6 +623,8 @@
 				46587113B0057FFA393339E1 /* TelemetryRecorder.swift in Sources */,
 				06F3C09975EFC2423CAACBBD /* TestAudioService.swift in Sources */,
 				AB49C2EFA65339248E2CDE0A /* TiltBounceBehavior.swift in Sources */,
+				020425E6F2E7989A31685AA5 /* TiltSweepBehavior.swift in Sources */,
+				83ABB2974CCD486C57DFF6AC /* VerticalFaderView.swift in Sources */,
 				559E1766D2449B806B514ED4 /* VirtualFixtureView.swift in Sources */,
 				59C11113EF6365A670E0770C /* VirtualOutputService.swift in Sources */,
 				342421959A9DD2A54E79B71B /* VirtualStageView.swift in Sources */,

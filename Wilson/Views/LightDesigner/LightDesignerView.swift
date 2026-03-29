@@ -54,6 +54,7 @@ struct LightDesignerView: View {
                 }
             }
         }
+        .frame(maxHeight: .infinity, alignment: .top)
         .sheet(isPresented: $showingCatalog) {
             FixtureCatalogSheet()
         }

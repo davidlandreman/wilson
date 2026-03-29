@@ -36,6 +36,9 @@ struct GroupingEngine: Sendable {
         case allUnison
         /// Group by fixture capabilities (RGB vs. movers vs. strobe-only).
         case capabilitySplit
+        /// Capability split, but movers are divided into two independent sub-groups.
+        /// Falls back to capabilitySplit when fewer than 2 movers.
+        case moverPairSplit
         /// Group by stage position (left/right halves).
         case spatialSplit
         /// Even/odd trussSlot for interleaved effects.
@@ -63,6 +66,9 @@ struct GroupingEngine: Sendable {
 
         case .alternating:
             return groupByAlternating(fixtures)
+
+        case .moverPairSplit:
+            return groupByMoverPairs(fixtures)
 
         case .soloBackground:
             return groupBySolo(fixtures)
@@ -96,6 +102,49 @@ struct GroupingEngine: Sendable {
             groups.append(FixtureGroup(name: "Effect", fixtureIDs: dimmerOnly, role: .effect))
         }
         // Fallback: if everything ended up in one bucket, just return all-unison
+        if groups.count <= 1 {
+            return [FixtureGroup(name: "All", fixtureIDs: fixtures.map(\.id), role: .all)]
+        }
+        return groups
+    }
+
+    private func groupByMoverPairs(_ fixtures: [StageFixture]) -> [FixtureGroup] {
+        var movers: [StageFixture] = []
+        var colorOnly: [UUID] = []
+        var dimmerOnly: [UUID] = []
+
+        for fixture in fixtures {
+            let attrs = fixture.attributes
+            if attrs.contains(.pan) || attrs.contains(.tilt) {
+                movers.append(fixture)
+            } else if attrs.contains(.red) || attrs.contains(.green) || attrs.contains(.blue) {
+                colorOnly.append(fixture.id)
+            } else {
+                dimmerOnly.append(fixture.id)
+            }
+        }
+
+        var groups: [FixtureGroup] = []
+
+        // Split movers into two sub-groups by truss position (left/right pairs)
+        if movers.count >= 2 {
+            let sorted = movers.sorted { $0.trussSlot < $1.trussSlot }
+            let mid = sorted.count / 2
+            let groupA = Array(sorted.prefix(mid))
+            let groupB = Array(sorted.suffix(from: mid))
+            groups.append(FixtureGroup(name: "Movers A", fixtureIDs: groupA.map(\.id), role: .movement))
+            groups.append(FixtureGroup(name: "Movers B", fixtureIDs: groupB.map(\.id), role: .movement))
+        } else if !movers.isEmpty {
+            groups.append(FixtureGroup(name: "Movers", fixtureIDs: movers.map(\.id), role: .movement))
+        }
+
+        if !colorOnly.isEmpty {
+            groups.append(FixtureGroup(name: "Color", fixtureIDs: colorOnly, role: .primary))
+        }
+        if !dimmerOnly.isEmpty {
+            groups.append(FixtureGroup(name: "Effect", fixtureIDs: dimmerOnly, role: .effect))
+        }
+
         if groups.count <= 1 {
             return [FixtureGroup(name: "All", fixtureIDs: fixtures.map(\.id), role: .all)]
         }

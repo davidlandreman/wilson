@@ -90,7 +90,9 @@ struct Choreographer: Sendable {
             // a quiet fade-in shouldn't get the building treatment.
             return base == .lowEnergy ? base : .building
         case .sustaining:
-            if energyScore > 0.50 && mood.excitement > 0.55 {
+            // Peak requires genuinely high energy AND excitement.
+            // Raised thresholds so builds and breakdowns don't trigger peak.
+            if energyScore > 0.65 && mood.excitement > 0.75 {
                 return .peakDrop
             }
             return base == .lowEnergy ? .mediumEnergy : base
@@ -139,12 +141,8 @@ struct Choreographer: Sendable {
 
         for group in groups {
             if group.role == .effect {
-                // Dimmer-only fixtures (strobes): beat pulse, not breathe
-                slots.append(BehaviorSlot(
-                    behavior: BeatPulseBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 0.5)
-                ))
+                // Strobe stays dark at low energy — save it for higher scenarios
+                continue
             } else {
                 // Color fixtures and movers: breathe + color wash
                 slots.append(BehaviorSlot(
@@ -171,19 +169,71 @@ struct Choreographer: Sendable {
     }
 
     private mutating func applyMediumEnergy(fixtures: [StageFixture], hasMovers: Bool) {
-        // Always capability split so movers get movement and strobes get beats
-        groups = groupingEngine.group(fixtures: fixtures, strategy: .capabilitySplit)
+        // Split movers into pairs so they can run independent movement
+        groups = groupingEngine.group(fixtures: fixtures, strategy: hasMovers ? .moverPairSplit : .capabilitySplit)
         slots = []
 
         let useRainbow = varietyIndex.isMultiple(of: 2)
+        // Swap mover pair roles every variety change so they trade behaviors
+        let swapMoverRoles = !varietyIndex.isMultiple(of: 2)
+        var moverGroupCount = 0
 
         for (index, group) in groups.enumerated() {
-            // All groups get beat pulse
-            slots.append(BehaviorSlot(
-                behavior: BeatPulseBehavior(),
-                groupID: group.id,
-                parameters: BehaviorParameters(intensity: 0.8)
-            ))
+            // Effect fixtures: mostly dark, occasional punchy accent
+            if group.role == .effect {
+                if varietyIndex % 4 == 3 {
+                    // One in four phrases: downbeat punches
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.6, variant: StrobeBehavior.Mode.punchy.rawValue)
+                    ))
+                }
+                // Otherwise strobe stays dark
+                continue
+            }
+
+            // Mover dimmer: cycle between different looks
+            if group.role == .movement {
+                switch varietyIndex % 4 {
+                case 0:
+                    // Alternating beat pulse between mover pairs
+                    let beatOffset = Double(moverGroupCount) * 1.0
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(
+                            intensity: 0.8,
+                            offset: beatOffset,
+                            variant: BeatPulseBehavior.Mode.alternating.rawValue
+                        )
+                    ))
+                case 1:
+                    // Breathe — smooth sine wave, no beat pulsing
+                    slots.append(BehaviorSlot(
+                        behavior: BreatheBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 0.8, intensity: 0.8)
+                    ))
+                case 2:
+                    // No dimmer behavior — color wash alone drives brightness
+                    break
+                default:
+                    // Standard beat pulse
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.7)
+                    ))
+                }
+            } else {
+                // Non-mover, non-effect: standard beat pulse
+                slots.append(BehaviorSlot(
+                    behavior: BeatPulseBehavior(),
+                    groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 0.8)
+                ))
+            }
 
             // Color behavior for fixtures that can do color
             if group.role != .effect {
@@ -202,33 +252,116 @@ struct Choreographer: Sendable {
                 }
             }
 
-            // Movement for movers
+            // Movement: alternate behaviors across mover sub-groups, swap on variety
             if group.role == .movement {
-                slots.append(BehaviorSlot(
-                    behavior: PanSweepBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(speed: 0.8, intensity: 0.7, offset: Double(index) * 0.3)
-                ))
-                slots.append(BehaviorSlot(
-                    behavior: TiltBounceBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 0.5)
-                ))
+                let isRandomGroup = (moverGroupCount == 0) != swapMoverRoles
+                if isRandomGroup {
+                    slots.append(BehaviorSlot(
+                        behavior: RandomLookBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 0.8, intensity: 0.7)
+                    ))
+                } else {
+                    slots.append(BehaviorSlot(
+                        behavior: PanSweepBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 0.8, intensity: 0.7, offset: Double(index) * 0.3)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: TiltBounceBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.5)
+                    ))
+                }
+                moverGroupCount += 1
             }
         }
     }
 
     private mutating func applyHighEnergy(fixtures: [StageFixture], hasMovers: Bool) {
-        // Capability split ensures movers get movement, strobes get beats
-        groups = groupingEngine.group(fixtures: fixtures, strategy: .capabilitySplit)
+        // Cycle through 4 movement looks:
+        //   0: pair split — random looks vs pan sweep + bounce
+        //   1: pair split — swapped roles
+        //   2: all movers — alternating tilt sweep
+        //   3: all movers — ballyhoo
+        let movementVariant = varietyIndex % 4
+        let usePairSplit = hasMovers && movementVariant < 2
+        let strategy: GroupingEngine.Strategy = usePairSplit ? .moverPairSplit : .capabilitySplit
+        groups = groupingEngine.group(fixtures: fixtures, strategy: strategy)
         slots = []
 
+        let effectVariant = varietyIndex % 4
+        var moverGroupCount = 0
+
         for (index, group) in groups.enumerated() {
-            slots.append(BehaviorSlot(
-                behavior: BeatPulseBehavior(),
-                groupID: group.id,
-                parameters: BehaviorParameters(intensity: 1.0)
-            ))
+            // Effect fixtures: cycle strobe modes
+            if group.role == .effect {
+                switch effectVariant {
+                case 0:
+                    // Onset-reactive flashes on a beat pulse base
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.9, variant: StrobeBehavior.Mode.onsetReactive.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.8)
+                    ))
+                case 1:
+                    // Rapid rhythmic strobe
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.85, variant: StrobeBehavior.Mode.subdivision.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.7)
+                    ))
+                case 2:
+                    // Half-time slam
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.9, variant: StrobeBehavior.Mode.halfTime.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.85)
+                    ))
+                default:
+                    // Plain beat pulse (contrast/relief)
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)
+                    ))
+                }
+            }
+
+            // Beat pulse — alternating between mover groups when pair-split
+            if group.role == .movement && usePairSplit {
+                let beatOffset = Double(moverGroupCount) * 1.0
+                slots.append(BehaviorSlot(
+                    behavior: BeatPulseBehavior(),
+                    groupID: group.id,
+                    parameters: BehaviorParameters(
+                        intensity: 1.0,
+                        offset: beatOffset,
+                        variant: BeatPulseBehavior.Mode.alternating.rawValue
+                    )
+                ))
+            } else if group.role != .effect {
+                slots.append(BehaviorSlot(
+                    behavior: BeatPulseBehavior(),
+                    groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 1.0)
+                ))
+            }
 
             // Color for non-effect fixtures
             if group.role != .effect {
@@ -251,18 +384,70 @@ struct Choreographer: Sendable {
                 }
             }
 
-            // Movement for movers
+            // Movement
             if group.role == .movement {
-                slots.append(BehaviorSlot(
-                    behavior: PanSweepBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(speed: 1.2, intensity: 0.8, offset: Double(index) * 0.25)
-                ))
-                slots.append(BehaviorSlot(
-                    behavior: TiltBounceBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 0.8)
-                ))
+                switch movementVariant {
+                case 0:
+                    // Pair A: random looks, Pair B: sweep + bounce
+                    if moverGroupCount == 0 {
+                        slots.append(BehaviorSlot(
+                            behavior: RandomLookBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(speed: 1.2, intensity: 0.9)
+                        ))
+                    } else {
+                        slots.append(BehaviorSlot(
+                            behavior: PanSweepBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(speed: 1.2, intensity: 0.8, offset: Double(index) * 0.25)
+                        ))
+                        slots.append(BehaviorSlot(
+                            behavior: TiltBounceBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(intensity: 0.8)
+                        ))
+                    }
+                case 1:
+                    // Swapped: Pair A: sweep + bounce, Pair B: random looks
+                    if moverGroupCount == 0 {
+                        slots.append(BehaviorSlot(
+                            behavior: PanSweepBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(speed: 1.2, intensity: 0.8, offset: Double(index) * 0.25)
+                        ))
+                        slots.append(BehaviorSlot(
+                            behavior: TiltBounceBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(intensity: 0.8)
+                        ))
+                    } else {
+                        slots.append(BehaviorSlot(
+                            behavior: RandomLookBehavior(),
+                            groupID: group.id,
+                            parameters: BehaviorParameters(speed: 1.2, intensity: 0.9)
+                        ))
+                    }
+                case 2:
+                    // All movers: alternating tilt sweep
+                    slots.append(BehaviorSlot(
+                        behavior: TiltSweepBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.2, intensity: 1.0)
+                    ))
+                default:
+                    // All movers: ballyhoo
+                    slots.append(BehaviorSlot(
+                        behavior: MovementPatternBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(
+                            speed: 1.5,
+                            intensity: 1.0,
+                            offset: Double(index) * 0.25,
+                            variant: MovementPatternBehavior.Pattern.ballyhoo.rawValue
+                        )
+                    ))
+                }
+                moverGroupCount += 1
             }
         }
     }
@@ -271,14 +456,51 @@ struct Choreographer: Sendable {
         groups = groupingEngine.group(fixtures: fixtures, strategy: .capabilitySplit)
         slots = []
 
-        for group in groups {
-            slots.append(BehaviorSlot(
-                behavior: BeatPulseBehavior(),
-                groupID: group.id,
-                parameters: BehaviorParameters(speed: 1.2, intensity: 0.9)
-            ))
+        let effectVariant = varietyIndex % 3
 
-            if group.role != .effect {
+        for group in groups {
+            // Effect fixtures: cycle strobe modes during build
+            if group.role == .effect {
+                switch effectVariant {
+                case 1:
+                    // Downbeat punches accelerating with the build
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.3, intensity: 0.85, variant: StrobeBehavior.Mode.punchy.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.2, intensity: 0.8)
+                    ))
+                case 2:
+                    // Subdivision strobe teasing the upcoming drop
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.8, variant: StrobeBehavior.Mode.subdivision.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.2, intensity: 0.7)
+                    ))
+                default:
+                    // Current: beat pulse only
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.2, intensity: 0.9)
+                    ))
+                }
+            } else {
+                // Non-effect groups: beat pulse + color wash
+                slots.append(BehaviorSlot(
+                    behavior: BeatPulseBehavior(),
+                    groupID: group.id,
+                    parameters: BehaviorParameters(speed: 1.2, intensity: 0.9)
+                ))
                 slots.append(BehaviorSlot(
                     behavior: ColorWashBehavior(),
                     groupID: group.id,
@@ -286,17 +508,33 @@ struct Choreographer: Sendable {
                 ))
             }
 
+            // BlackoutAccent for all groups
             slots.append(BehaviorSlot(
                 behavior: BlackoutAccentBehavior(),
                 groupID: group.id
             ))
 
             if group.role == .movement {
-                slots.append(BehaviorSlot(
-                    behavior: MovementPatternBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(speed: 1.5, intensity: 0.9, variant: MovementPatternBehavior.Pattern.figure8.rawValue)
-                ))
+                switch varietyIndex % 3 {
+                case 0:
+                    slots.append(BehaviorSlot(
+                        behavior: MovementPatternBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.5, intensity: 0.9, variant: MovementPatternBehavior.Pattern.figure8.rawValue)
+                    ))
+                case 1:
+                    slots.append(BehaviorSlot(
+                        behavior: TiltSweepBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.5, intensity: 0.9)
+                    ))
+                default:
+                    slots.append(BehaviorSlot(
+                        behavior: MovementPatternBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.5, intensity: 0.9, variant: MovementPatternBehavior.Pattern.ballyhoo.rawValue)
+                    ))
+                }
             }
         }
     }
@@ -304,23 +542,56 @@ struct Choreographer: Sendable {
     private mutating func applyPeakDrop(fixtures: [StageFixture], hasMovers: Bool) {
         let useChase = !varietyIndex.isMultiple(of: 2)
 
-        // Capability split so movers get ballyhoo, strobes get strobe
-        groups = groupingEngine.group(fixtures: fixtures, strategy: .capabilitySplit)
+        // Split movers for peak moments — one pair ballyhoos, the other scans
+        groups = groupingEngine.group(fixtures: fixtures, strategy: hasMovers ? .moverPairSplit : .capabilitySplit)
         slots = []
+
+        let swapMoverRoles = !varietyIndex.isMultiple(of: 2)
+        var moverGroupCount = 0
+
+        let effectVariant = varietyIndex % 3
 
         for (index, group) in groups.enumerated() {
             if group.role == .effect {
-                // Strobes: strobe effect at peak
-                slots.append(BehaviorSlot(
-                    behavior: StrobeBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 1.0)
-                ))
-                slots.append(BehaviorSlot(
-                    behavior: BeatPulseBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 1.0)
-                ))
+                // Strobes: cycle modes at peak — all full intensity
+                switch effectVariant {
+                case 1:
+                    // Relentless rapid strobe
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.subdivision.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.9)
+                    ))
+                case 2:
+                    // Heavy half-time slam
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.halfTime.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)
+                    ))
+                default:
+                    // Onset-reactive (current behavior)
+                    slots.append(BehaviorSlot(
+                        behavior: StrobeBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.onsetReactive.rawValue)
+                    ))
+                    slots.append(BehaviorSlot(
+                        behavior: BeatPulseBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)
+                    ))
+                }
             } else if useChase {
                 slots.append(BehaviorSlot(
                     behavior: ChaseBehavior(),
@@ -344,16 +615,27 @@ struct Choreographer: Sendable {
             }
 
             if group.role == .movement {
-                slots.append(BehaviorSlot(
-                    behavior: MovementPatternBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(
-                        speed: 2.0,
-                        intensity: 1.0,
-                        offset: Double(index) * 0.5,
-                        variant: MovementPatternBehavior.Pattern.ballyhoo.rawValue
-                    )
-                ))
+                let isBallyhooGroup = (moverGroupCount == 0) != swapMoverRoles
+                if isBallyhooGroup {
+                    slots.append(BehaviorSlot(
+                        behavior: MovementPatternBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(
+                            speed: 2.0,
+                            intensity: 1.0,
+                            offset: Double(index) * 0.5,
+                            variant: MovementPatternBehavior.Pattern.ballyhoo.rawValue
+                        )
+                    ))
+                } else {
+                    // Other pair: fast random scanning
+                    slots.append(BehaviorSlot(
+                        behavior: RandomLookBehavior(),
+                        groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.5, intensity: 1.0)
+                    ))
+                }
+                moverGroupCount += 1
             }
         }
     }
@@ -364,12 +646,8 @@ struct Choreographer: Sendable {
 
         for group in groups {
             if group.role == .effect {
-                // Strobes: moderate beat pulse when declining
-                slots.append(BehaviorSlot(
-                    behavior: BeatPulseBehavior(),
-                    groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 0.5)
-                ))
+                // Strobe stays dark when declining
+                continue
             } else {
                 slots.append(BehaviorSlot(
                     behavior: BreatheBehavior(),

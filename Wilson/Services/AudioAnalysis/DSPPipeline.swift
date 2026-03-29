@@ -13,6 +13,7 @@ final class DSPPipeline: @unchecked Sendable {
     private let fftEngine: FFTEngine
     private let spectralAnalyzer: SpectralAnalyzer
     private var energyAnalyzer: EnergyAnalyzer
+    private var energyNormalizer: AdaptiveEnergyNormalizer
     private let onsetDetector: OnsetDetector
     private let beatTracker: BeatTracker
     private let chromagramAnalyzer: ChromagramAnalyzer
@@ -38,6 +39,7 @@ final class DSPPipeline: @unchecked Sendable {
         self.fftEngine = FFTEngine(fftSize: fftSize)
         self.spectralAnalyzer = SpectralAnalyzer(fftSize: fftSize, sampleRate: sampleRate)
         self.energyAnalyzer = EnergyAnalyzer()
+        self.energyNormalizer = AdaptiveEnergyNormalizer(analysisRate: analysisRate)
         self.onsetDetector = OnsetDetector()
         self.beatTracker = BeatTracker(analysisRate: analysisRate)
         self.chromagramAnalyzer = ChromagramAnalyzer(
@@ -101,7 +103,9 @@ final class DSPPipeline: @unchecked Sendable {
         let energy = fftInputBuffer.withUnsafeBufferPointer { buf in
             energyAnalyzer.analyze(buf.baseAddress!, count: fftSize)
         }
-        state.energy = Double(energy.rms)
+        state.rawEnergy = Double(energy.rms)
+        state.energy = energyNormalizer.normalize(energy.rms)
+        state.normalizationCeiling = energyNormalizer.currentCeiling
         state.peakLevel = Double(energy.peak)
         state.crestFactor = Double(energy.crestFactor)
         state.isSilent = energy.isSilent

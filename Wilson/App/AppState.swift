@@ -12,8 +12,10 @@ final class AppState {
     let virtualOutput = VirtualOutputService()
     let testAudioService = TestAudioService()
     let telemetryRecorder = TelemetryRecorder()
+    let dmxController = DMXControllerService()
 
     var isRunning = false
+    private var manualRefreshTimer: Timer?
 
     init() {
         // Wire audio sources → analysis pipeline (shared handler)
@@ -38,6 +40,29 @@ final class AppState {
                 scenario: engine.currentScenario,
                 slots: engine.activeSlotDescriptions
             )
+        }
+    }
+
+    /// Start or stop the manual refresh timer based on DMX controller state.
+    func updateManualRefreshTimer() {
+        if dmxController.isActive && manualRefreshTimer == nil {
+            let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
+                Task { @MainActor in
+                    guard let self, self.dmxController.isActive else { return }
+                    self.dmxController.tickCrossfade(engine: self.decisionEngine)
+                    self.dmxController.pushAllOverrides(engine: self.decisionEngine)
+                    self.virtualOutput.update(
+                        fixtureStates: self.decisionEngine.fixtureStates,
+                        fixtures: self.fixtureManager.fixtures
+                    )
+                }
+            }
+            // Use .common mode so the timer fires during drag gesture tracking
+            RunLoop.main.add(timer, forMode: .common)
+            manualRefreshTimer = timer
+        } else if !dmxController.isActive, let timer = manualRefreshTimer {
+            timer.invalidate()
+            manualRefreshTimer = nil
         }
     }
 }

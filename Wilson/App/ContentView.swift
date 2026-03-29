@@ -13,6 +13,9 @@ struct ContentView: View {
                 NavigationLink(value: SidebarItem.lightDesigner) {
                     Label("Light Designer", systemImage: "lightbulb")
                 }
+                NavigationLink(value: SidebarItem.dmxController) {
+                    Label("DMX Controller", systemImage: "slider.horizontal.3")
+                }
                 NavigationLink(value: SidebarItem.virtualStage) {
                     Label("Virtual Stage", systemImage: "theatermasks")
                 }
@@ -27,6 +30,8 @@ struct ContentView: View {
                 DashboardView()
             case .lightDesigner:
                 LightDesignerView()
+            case .dmxController:
+                DMXControllerView()
             case .virtualStage:
                 VirtualStageView()
             case .audioDebug:
@@ -39,6 +44,7 @@ struct ContentView: View {
 enum SidebarItem: Hashable {
     case dashboard
     case lightDesigner
+    case dmxController
     case virtualStage
     case audioDebug
 }
