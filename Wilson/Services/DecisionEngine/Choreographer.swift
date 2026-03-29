@@ -10,6 +10,9 @@ struct Choreographer: Sendable {
     /// Number of bars counted (synced from MoodEngine via DecisionEngineService).
     var barCounter = 0
 
+    /// Scene library for autonomous scene selection and blending.
+    var sceneLibrary = SceneLibrary()
+
     private var groupingEngine = GroupingEngine()
     private var lastChangeTime: Double = 0
     private(set) var currentScenario: Scenario = .lowEnergy
@@ -58,10 +61,17 @@ struct Choreographer: Sendable {
         if scenarioChanged && cooldownElapsed {
             varietyIndex = 0
             applyScenario(scenario, fixtures: fixtures, time: time)
+            sceneLibrary.selectScene(scenario: scenario, mood: mood)
         } else if phraseChange {
             varietyIndex += 1
             applyScenario(scenario, fixtures: fixtures, time: time)
+            sceneLibrary.selectScene(scenario: scenario, mood: mood)
         }
+    }
+
+    /// Advance scene crossfade. Called every frame from DecisionEngineService.
+    mutating func tickSceneTransition(deltaTime: Double) {
+        sceneLibrary.tick(deltaTime: deltaTime)
     }
 
     private func classifyScenario(mood: MoodState) -> Scenario {

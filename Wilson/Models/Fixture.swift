@@ -41,22 +41,83 @@ enum FixtureAttribute: String, Codable, Sendable, CaseIterable {
     case custom
 }
 
-/// A patched fixture instance on stage — a specific fixture at a specific DMX address.
+/// A patched fixture instance on stage — persisted via SwiftData, converted to StageFixture at runtime.
 @Model
 final class PatchedFixture {
-    var label: String
-    var profile: FixtureProfile?
-    var dmxAddress: Int // 1–512
-    var groupName: String?
-    var positionX: Double
-    var positionY: Double
+    /// Stable UUID that matches StageFixture.id across launches.
+    var fixtureID: UUID = UUID()
+    var label: String = ""
+    var dmxAddress: Int = 0 // 1–512, or 0 for unpatched
+    var isVirtual: Bool = true
+    var positionX: Double = 0
+    var positionY: Double = 0
+    var trussSlot: Int = 0
 
-    init(label: String, profile: FixtureProfile? = nil, dmxAddress: Int, groupName: String? = nil, positionX: Double = 0, positionY: Double = 0) {
+    // Definition data stored directly so we're self-contained
+    var definitionID: UUID = UUID()
+    var definitionName: String = ""
+    var definitionManufacturer: String = ""
+    var definitionChannels: [ChannelDefinition] = []
+
+    init(
+        fixtureID: UUID,
+        label: String,
+        dmxAddress: Int = 0,
+        isVirtual: Bool = true,
+        positionX: Double = 0,
+        positionY: Double = 0,
+        trussSlot: Int = 0,
+        definitionID: UUID,
+        definitionName: String,
+        definitionManufacturer: String,
+        definitionChannels: [ChannelDefinition]
+    ) {
+        self.fixtureID = fixtureID
         self.label = label
-        self.profile = profile
         self.dmxAddress = dmxAddress
-        self.groupName = groupName
+        self.isVirtual = isVirtual
         self.positionX = positionX
         self.positionY = positionY
+        self.trussSlot = trussSlot
+        self.definitionID = definitionID
+        self.definitionName = definitionName
+        self.definitionManufacturer = definitionManufacturer
+        self.definitionChannels = definitionChannels
+    }
+
+    /// Convert to the runtime StageFixture used by the pipeline.
+    func toStageFixture() -> StageFixture {
+        let definition = FixtureDefinition(
+            id: definitionID,
+            name: definitionName,
+            manufacturer: definitionManufacturer,
+            channels: definitionChannels
+        )
+        return StageFixture(
+            id: fixtureID,
+            label: label,
+            definition: definition,
+            dmxAddress: dmxAddress > 0 ? dmxAddress : nil,
+            isVirtual: isVirtual,
+            position: SIMD2(positionX, positionY),
+            trussSlot: trussSlot
+        )
+    }
+
+    /// Create a PatchedFixture from a runtime StageFixture.
+    static func from(_ fixture: StageFixture) -> PatchedFixture {
+        PatchedFixture(
+            fixtureID: fixture.id,
+            label: fixture.label,
+            dmxAddress: fixture.dmxAddress ?? 0,
+            isVirtual: fixture.isVirtual,
+            positionX: fixture.position.x,
+            positionY: fixture.position.y,
+            trussSlot: fixture.trussSlot,
+            definitionID: fixture.definition.id,
+            definitionName: fixture.definition.name,
+            definitionManufacturer: fixture.definition.manufacturer,
+            definitionChannels: fixture.definition.channels
+        )
     }
 }

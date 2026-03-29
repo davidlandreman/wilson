@@ -24,12 +24,17 @@ final class DecisionEngineService {
     /// Active color palette from CueService.
     var activePalette: ColorPalette?
 
+    /// Scene snapshots for autonomous choreographer scene selection.
+    /// Set by AppState each frame from the cached main-actor snapshot array.
+    var autonomousScenes: [SceneSnapshot] = []
+
     // MARK: - Observable debug state
 
     private(set) var currentMood = MoodState()
     private(set) var activeGroups: [FixtureGroup] = []
     private(set) var activeSlotDescriptions: [String] = []
     private(set) var currentScenario: Choreographer.Scenario = .lowEnergy
+    private(set) var activeSceneName: String?
 
     // MARK: - Internal subsystems
 
@@ -61,6 +66,9 @@ final class DecisionEngineService {
         moodEngine.update(musicalState: musicalState, deltaTime: clock.deltaTime)
         currentMood = moodEngine.state
 
+        // Provide scene snapshots to choreographer for autonomous selection
+        choreographer.sceneLibrary.availableScenes = autonomousScenes
+
         // Layer 2: Choreographer decisions (conditional, not every frame)
         choreographer.evaluate(
             musicalState: musicalState,
@@ -76,6 +84,9 @@ final class DecisionEngineService {
 
         // Sync bar counter from mood engine to choreographer
         choreographer.barCounter = moodEngine.barCounter
+
+        // Advance scene crossfade each frame
+        choreographer.tickSceneTransition(deltaTime: clock.deltaTime)
 
         // Layer 3: Resolve palette and build context
         let resolvedPalette = colorEngine.resolve(
@@ -120,6 +131,30 @@ final class DecisionEngineService {
                 }
             }
         }
+
+        // Layer 4.5: Scene base layer blend
+        // When the choreographer has selected a scene, lerp between scene base
+        // values and behavior output based on the scene's reactivity level.
+        if choreographer.sceneLibrary.hasActiveScene {
+            let sceneReactivity = choreographer.sceneLibrary.activeReactivity
+            for fixture in fixtures {
+                guard let sceneBase = choreographer.sceneLibrary.blendedOutput(for: fixture.id) else {
+                    continue
+                }
+                let behaviorAttrs = composited[fixture.id] ?? [:]
+                var blended: [FixtureAttribute: Double] = [:]
+
+                let allAttrs = Set(sceneBase.keys).union(behaviorAttrs.keys)
+                for attr in allAttrs {
+                    let sv = sceneBase[attr] ?? 0
+                    let bv = behaviorAttrs[attr] ?? 0
+                    blended[attr] = sv + (bv - sv) * sceneReactivity
+                }
+                composited[fixture.id] = blended
+            }
+        }
+
+        activeSceneName = choreographer.sceneLibrary.activeSceneName
 
         // Layer 5: Build final fixture states
         var states: [UUID: FixtureState] = [:]

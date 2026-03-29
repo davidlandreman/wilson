@@ -205,7 +205,6 @@ struct DMXControllerView: View {
                                     set: { newValue in
                                         appState.dmxController.submasterLevels[scene.name] = newValue
                                         if controller.isActive {
-                                            // Update submaster scenes reference
                                             appState.dmxController.submasterScenes = scenes
                                             appState.dmxController.pushAllOverrides(engine: appState.decisionEngine)
                                         }
@@ -220,6 +219,10 @@ struct DMXControllerView: View {
                                 },
                                 onDelete: {
                                     modelContext.delete(scene)
+                                    appState.refreshSceneSnapshots(from: scenes.filter { $0 !== scene })
+                                },
+                                onTagsChanged: {
+                                    appState.refreshSceneSnapshots(from: scenes)
                                 }
                             )
                         }
@@ -237,6 +240,10 @@ struct DMXControllerView: View {
         let scene = controller.recordScene(name: sceneName)
         modelContext.insert(scene)
         sceneName = ""
+        // Refresh snapshots after SwiftData processes the insert
+        DispatchQueue.main.async {
+            appState.refreshSceneSnapshots(from: scenes)
+        }
     }
 }
 
@@ -247,6 +254,8 @@ private struct SceneCardView: View {
     @Binding var submasterLevel: Double
     let onRecall: () -> Void
     let onDelete: () -> Void
+    let onTagsChanged: () -> Void
+    @State private var showTagging = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -257,6 +266,18 @@ private struct SceneCardView: View {
 
                 Spacer()
 
+                Button {
+                    showTagging.toggle()
+                } label: {
+                    Image(systemName: "tag")
+                        .font(.system(size: 9))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(scene.isAutonomousEnabled ? .blue : .secondary)
+                .popover(isPresented: $showTagging) {
+                    SceneTaggingView(scene: scene, onChanged: onTagsChanged)
+                }
+
                 Button(role: .destructive) {
                     onDelete()
                 } label: {
@@ -265,6 +286,15 @@ private struct SceneCardView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
+            }
+
+            // Tag pills
+            HStack(spacing: 3) {
+                TagPill(scene.energyLevel.rawValue.capitalized, color: energyColor)
+                TagPill(scene.mood.rawValue.capitalized, color: moodColor)
+                if scene.isAutonomousEnabled {
+                    TagPill("\(Int(scene.reactivity * 100))%", color: .blue)
+                }
             }
 
             Button("Recall") {
@@ -284,10 +314,49 @@ private struct SceneCardView: View {
             }
         }
         .padding(8)
-        .frame(width: 140)
+        .frame(width: 160)
         .background(
             RoundedRectangle(cornerRadius: 6)
                 .fill(Color.black.opacity(0.2))
         )
+    }
+
+    private var energyColor: Color {
+        switch scene.energyLevel {
+        case .low: .green
+        case .medium: .yellow
+        case .high: .red
+        case .any: .gray
+        }
+    }
+
+    private var moodColor: Color {
+        switch scene.mood {
+        case .calm: .teal
+        case .uplifting: .orange
+        case .intense: .red
+        case .dark: .purple
+        case .any: .gray
+        }
+    }
+}
+
+private struct TagPill: View {
+    let text: String
+    let color: Color
+
+    init(_ text: String, color: Color) {
+        self.text = text
+        self.color = color
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 8, weight: .medium))
+            .padding(.horizontal, 4)
+            .padding(.vertical, 1)
+            .background(color.opacity(0.2))
+            .foregroundStyle(color)
+            .clipShape(Capsule())
     }
 }

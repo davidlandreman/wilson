@@ -110,7 +110,8 @@ struct DashboardView: View {
                         for def in FixtureCatalog.all {
                             let fixture = appState.fixtureManager.addFixture(
                                 definition: def,
-                                label: "Test \(def.name)"
+                                label: "Test \(def.name)",
+                                persist: false
                             )
                             var state = FixtureState(fixtureID: fixture.id)
                             state.attributes[.dimmer] = 1.0
@@ -126,7 +127,8 @@ struct DashboardView: View {
                         for i in 1...2 {
                             let fixture = appState.fixtureManager.addFixture(
                                 definition: FixtureCatalog.genericRGBPar,
-                                label: "Test Blue Wash \(i)"
+                                label: "Test Blue Wash \(i)",
+                                persist: false
                             )
                             var state = FixtureState(fixtureID: fixture.id)
                             state.attributes[.dimmer] = 1.5

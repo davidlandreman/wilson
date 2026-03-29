@@ -93,6 +93,17 @@ struct EngineDebugOverlay: View {
                 }
             }
 
+            // Active scene
+            if let sceneName = appState.decisionEngine.activeSceneName {
+                HStack(spacing: 4) {
+                    Text("Scene")
+                        .foregroundStyle(.secondary)
+                    Text(sceneName)
+                        .foregroundStyle(.mint)
+                        .fontWeight(.bold)
+                }
+            }
+
             // BPM
             HStack(spacing: 12) {
                 HStack(spacing: 4) {

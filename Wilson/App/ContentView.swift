@@ -1,7 +1,9 @@
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
     @Environment(\.appState) private var appState
+    @Environment(\.modelContext) private var modelContext
     @State private var selection: SidebarItem? = .dashboard
 
     var body: some View {
@@ -37,6 +39,9 @@ struct ContentView: View {
             case .audioDebug:
                 AudioDebugView()
             }
+        }
+        .task {
+            appState.fixtureManager.initialize(context: modelContext)
         }
     }
 }

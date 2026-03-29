@@ -15,7 +15,12 @@ final class AppState {
     let dmxController = DMXControllerService()
 
     var isRunning = false
+    var isStageWindowOpen = false
     private var manualRefreshTimer: Timer?
+
+    /// Cached scene snapshots for the autonomous choreographer pipeline.
+    /// Updated from the DMX controller view when scenes change.
+    private(set) var cachedSceneSnapshots: [SceneSnapshot] = []
 
     init() {
         // Wire audio sources → analysis pipeline (shared handler)
@@ -29,9 +34,10 @@ final class AppState {
         let virtual = virtualOutput
         let cues = cueService
         let recorder = telemetryRecorder
-        audioAnalysisService.onMusicalStateUpdate = { musicalState in
+        audioAnalysisService.onMusicalStateUpdate = { [weak self] musicalState in
             engine.activePalette = cues.activePalette
             let currentFixtures = fixtures.fixtures
+            engine.autonomousScenes = self?.cachedSceneSnapshots ?? []
             engine.update(musicalState: musicalState, fixtures: currentFixtures)
             virtual.update(fixtureStates: engine.fixtureStates, fixtures: currentFixtures)
             recorder.tick(
@@ -41,6 +47,14 @@ final class AppState {
                 slots: engine.activeSlotDescriptions
             )
         }
+    }
+
+    /// Refresh the cached scene snapshots for the choreographer pipeline.
+    /// Call when scenes are created, deleted, or their tags change.
+    func refreshSceneSnapshots(from scenes: [DMXScene]) {
+        cachedSceneSnapshots = scenes
+            .filter(\.isAutonomousEnabled)
+            .map { $0.toSnapshot() }
     }
 
     /// Start or stop the manual refresh timer based on DMX controller state.

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		020425E6F2E7989A31685AA5 /* TiltSweepBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DFE39EC329F1DB3CEF5B16 /* TiltSweepBehavior.swift */; };
 		025E4A236227BD64554D218E /* AudioDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4335C4D6C55FB975B781B45A /* AudioDebugView.swift */; };
+		066421FB541F941F6242F8A9 /* SceneLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04746DAF391004E15406A9B9 /* SceneLibrary.swift */; };
 		06F3C09975EFC2423CAACBBD /* TestAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30496912902BB73F0D26E5 /* TestAudioService.swift */; };
 		0CBB802AFF4C12D6A267EC54 /* DMXScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7895FB9760B896FC38858D /* DMXScene.swift */; };
 		0DCEDBF76D11BB811E2F863A /* BreatheBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6CF91286883D77967C2412 /* BreatheBehavior.swift */; };
@@ -18,6 +19,7 @@
 		198F2823B9C7E6FAF67E915D /* MoodState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4760DCAC878E679FA2EEFF4 /* MoodState.swift */; };
 		21584EACFCB4DF321D149B62 /* BehaviorSlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622450748D0F489CF71B0B0E /* BehaviorSlot.swift */; };
 		2276ED5989DD9F172CA7E01F /* Fixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF20F127C9436DDFB8A4976 /* Fixture.swift */; };
+		22AC50C02F24CAE5B0029AD7 /* SceneTaggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DE15873ADCC2486BA9EC /* SceneTaggingView.swift */; };
 		2F6DB3D6B96C47001D82919F /* EngineClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB76240FBE009FD896C172D /* EngineClock.swift */; };
 		31616630967ABA8F88B4FAFC /* PanSweepBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5B6E23A31A13E0042BD240 /* PanSweepBehavior.swift */; };
 		342421959A9DD2A54E79B71B /* VirtualStageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E1F8610E96FE6AEAAEECBA /* VirtualStageView.swift */; };
@@ -30,6 +32,7 @@
 		45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFAE8DBEF7680810286F02E /* SpectralAnalyzer.swift */; };
 		46587113B0057FFA393339E1 /* TelemetryRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5FB61B1C11487ED1A94A85 /* TelemetryRecorder.swift */; };
 		4A210165888AB36B0551EA7B /* AdaptiveEnergyNormalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B0FE26139CAFFC06084AF5 /* AdaptiveEnergyNormalizerTests.swift */; };
+		4BF0D5D45E4379B64D22005B /* SceneLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66165356EE267EDB47534379 /* SceneLibraryTests.swift */; };
 		4EB72066461E958641FBCB78 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A844464B464E6C6F04651AA3 /* DashboardView.swift */; };
 		53F7069187C12A5DE52C6224 /* DMXFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 017A399C0A8779816C5A2F65 /* DMXFrame.swift */; };
 		54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB7E3B0604F9824FA11B068 /* RingBuffer.swift */; };
@@ -101,6 +104,7 @@
 /* Begin PBXFileReference section */
 		017A399C0A8779816C5A2F65 /* DMXFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXFrame.swift; sourceTree = "<group>"; };
 		03181DDCD678F005B13C1308 /* ChaseBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChaseBehavior.swift; sourceTree = "<group>"; };
+		04746DAF391004E15406A9B9 /* SceneLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLibrary.swift; sourceTree = "<group>"; };
 		064CE256E99995F8663404C2 /* BlackoutAccentBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackoutAccentBehavior.swift; sourceTree = "<group>"; };
 		06D63A6C67BE7D58C2CC2F35 /* ColorWashBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorWashBehavior.swift; sourceTree = "<group>"; };
 		07C5614333397C904FA31878 /* FixtureSceneNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureSceneNodes.swift; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 		622450748D0F489CF71B0B0E /* BehaviorSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorSlot.swift; sourceTree = "<group>"; };
 		62F3F2F821C0726058675AF7 /* AudioAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAnalysisService.swift; sourceTree = "<group>"; };
 		638DAB193B0913BC4CEC4D48 /* Wilson.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wilson.entitlements; sourceTree = "<group>"; };
+		66165356EE267EDB47534379 /* SceneLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLibraryTests.swift; sourceTree = "<group>"; };
 		680653EC2893A552CD747147 /* FixtureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureManager.swift; sourceTree = "<group>"; };
 		6C8FDF609582D0C92EC23DE2 /* DMXOutputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXOutputService.swift; sourceTree = "<group>"; };
 		6D71F92BCA22336F9F99F8A3 /* RandomLookBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomLookBehavior.swift; sourceTree = "<group>"; };
@@ -178,6 +183,7 @@
 		E048E08585BF15D43EE746B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E05687FC23C6A1F0866D807A /* StrobeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrobeBehavior.swift; sourceTree = "<group>"; };
 		E103E235F8DFC78C1A8EE3E4 /* FixtureGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureGroup.swift; sourceTree = "<group>"; };
+		EF72DE15873ADCC2486BA9EC /* SceneTaggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTaggingView.swift; sourceTree = "<group>"; };
 		F4760DCAC878E679FA2EEFF4 /* MoodState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodState.swift; sourceTree = "<group>"; };
 		FA7895FB9760B896FC38858D /* DMXScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DMXScene.swift; sourceTree = "<group>"; };
 		FE246F6703A9FDF8BF616663 /* BeatPulseBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPulseBehavior.swift; sourceTree = "<group>"; };
@@ -262,6 +268,7 @@
 				90CC2DB14C6A506F3A041E10 /* ControllerToolbarView.swift */,
 				51FABBD1BDAB418F2998D839 /* DMXControllerView.swift */,
 				2AECB7CC017271CFE0B121B8 /* FixtureFaderStripView.swift */,
+				EF72DE15873ADCC2486BA9EC /* SceneTaggingView.swift */,
 				99F5C6F9ECE1B05008E14D6A /* VerticalFaderView.swift */,
 			);
 			path = DMXController;
@@ -337,6 +344,7 @@
 				0F5457A978B7E5C5364E4317 /* MoodEngine.swift */,
 				F4760DCAC878E679FA2EEFF4 /* MoodState.swift */,
 				1D111EF534A5B29B507C3487 /* MovementLimiter.swift */,
+				04746DAF391004E15406A9B9 /* SceneLibrary.swift */,
 				9E5FB61B1C11487ED1A94A85 /* TelemetryRecorder.swift */,
 			);
 			path = DecisionEngine;
@@ -442,6 +450,7 @@
 			children = (
 				C1B0FE26139CAFFC06084AF5 /* AdaptiveEnergyNormalizerTests.swift */,
 				81A1809649ECDDFF30D5E44B /* AudioAnalysisTests.swift */,
+				66165356EE267EDB47534379 /* SceneLibraryTests.swift */,
 				5AAB7FD2485FDDE6784BAAD8 /* StageSceneTests.swift */,
 				7DFD136ACB72217B7A54A345 /* TracerBulletTests.swift */,
 				D0C68BB924C98F5A13EB112B /* WilsonTests.swift */,
@@ -546,6 +555,7 @@
 			files = (
 				4A210165888AB36B0551EA7B /* AdaptiveEnergyNormalizerTests.swift in Sources */,
 				E2E5809E9FD650F2B7DAD071 /* AudioAnalysisTests.swift in Sources */,
+				4BF0D5D45E4379B64D22005B /* SceneLibraryTests.swift in Sources */,
 				9F1F3E9F67FEFD6C04B10D43 /* StageSceneTests.swift in Sources */,
 				836346D4FE70017AADCEBEDD /* TracerBulletTests.swift in Sources */,
 				3E28C5F1F26FD1866472C9CD /* WilsonTests.swift in Sources */,
@@ -612,6 +622,8 @@
 				31616630967ABA8F88B4FAFC /* PanSweepBehavior.swift in Sources */,
 				F9C40680DF081D2091D8A37E /* RandomLookBehavior.swift in Sources */,
 				54B7381CC6ABC99AE9B9FAAD /* RingBuffer.swift in Sources */,
+				066421FB541F941F6242F8A9 /* SceneLibrary.swift in Sources */,
+				22AC50C02F24CAE5B0029AD7 /* SceneTaggingView.swift in Sources */,
 				45F1417123FFF6AEBCA4864E /* SpectralAnalyzer.swift in Sources */,
 				E8339DE2267BB6533FACA57C /* SpectralColorBehavior.swift in Sources */,
 				7B50EBAE6EE07AB84E5131A2 /* StageFixture.swift in Sources */,

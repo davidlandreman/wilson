@@ -65,9 +65,7 @@ struct LightDesignerView: View {
         for fixture in appState.fixtureManager.fixtures {
             appState.decisionEngine.removeOverride(for: fixture.id)
         }
-        while !appState.fixtureManager.fixtures.isEmpty {
-            appState.fixtureManager.removeFixture(id: appState.fixtureManager.fixtures[0].id)
-        }
+        appState.fixtureManager.removeAll()
 
         // Add preset fixtures
         for entry in preset.fixtures {
