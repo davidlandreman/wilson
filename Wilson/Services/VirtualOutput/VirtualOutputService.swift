@@ -63,21 +63,13 @@ final class VirtualOutputService {
     }
 
     private func resolveColor(_ state: FixtureState, fixture: StageFixture) -> Color {
-        if fixture.attributes.contains(.red) {
-            return Color(
-                red: state.attributes[.red] ?? 0,
-                green: state.attributes[.green] ?? 0,
-                blue: state.attributes[.blue] ?? 0
-            )
-        }
-        if fixture.attributes.contains(.colorWheel) {
-            // Color wheel position → approximate hue for visualization.
-            // Real color depends on the physical wheel; this gives a visual indication of changes.
-            let position = state.attributes[.colorWheel] ?? 0
-            if position < 0.01 {
-                return .white // Open white
-            }
-            return Color(hue: position, saturation: 0.8, brightness: 1.0)
+        // Check behavior's RGB intent — present even for color wheel fixtures
+        // since color behaviors always write .red/.green/.blue.
+        let r = state.attributes[.red] ?? 0
+        let g = state.attributes[.green] ?? 0
+        let b = state.attributes[.blue] ?? 0
+        if r + g + b > 0.01 {
+            return Color(red: r, green: g, blue: b)
         }
         // Single-channel fixtures (strobe, dimmer-only): white
         return .white

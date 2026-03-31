@@ -561,6 +561,18 @@ struct Choreographer: Sendable {
                     parameters: BehaviorParameters(speed: 3.0, intensity: 1.0)))
             }
 
+            // Strobe on movers at high energy
+            if isMoverGroupHigh {
+                let strobeMode: Int = switch effectVariant {
+                case 0: StrobeBehavior.Mode.onsetReactive.rawValue
+                case 1: StrobeBehavior.Mode.subdivision.rawValue
+                case 2: StrobeBehavior.Mode.halfTime.rawValue
+                default: StrobeBehavior.Mode.punchy.rawValue
+                }
+                slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 0.85, variant: strobeMode)))
+            }
+
             // Movement
             if isMoverGroupHigh {
                 switch movementVariant {
@@ -642,6 +654,10 @@ struct Choreographer: Sendable {
             slots.append(BehaviorSlot(behavior: BlackoutAccentBehavior(), groupID: group.id))
 
             if groupHasMovers(group, fixtures: fixtures) {
+                // Punchy strobe on movers during build
+                slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 0.8, variant: StrobeBehavior.Mode.punchy.rawValue)))
+
                 switch movementVariant {
                 case 0:
                     slots.append(BehaviorSlot(behavior: MovementPatternBehavior(), groupID: group.id,
@@ -722,6 +738,10 @@ struct Choreographer: Sendable {
                 parameters: BehaviorParameters(intensity: 1.0)))
 
             if groupHasMovers(group, fixtures: fixtures) {
+                // Strobe on movers at peak drop
+                slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.onsetReactive.rawValue)))
+
                 let isBallyhooGroup = (moverGroupCount == 0) != swapMoverRoles
                 if isBallyhooGroup {
                     slots.append(BehaviorSlot(behavior: MovementPatternBehavior(), groupID: group.id,

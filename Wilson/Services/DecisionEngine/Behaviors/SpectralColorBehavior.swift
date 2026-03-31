@@ -46,7 +46,7 @@ struct SpectralColorBehavior: Behavior {
 
         var result: [UUID: [FixtureAttribute: Double]] = [:]
         for fixture in fixtures {
-            guard fixture.attributes.contains(.red) else { continue }
+            guard fixture.attributes.contains(.red) || fixture.attributes.contains(.colorWheel) else { continue }
             result[fixture.id] = [
                 .red: scaled.red,
                 .green: scaled.green,

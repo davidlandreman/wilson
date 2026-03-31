@@ -19,13 +19,14 @@ struct LookGenerator: Sendable {
         let template = pickTemplate(scenario: scenario, mood: mood, seed: seed)
         let attrs = template.build(fixtures: fixtures, palette: palette, mood: mood, seed: seed)
 
-        // Reactivity varies by scenario: low energy shows more base, high energy more behavior
+        // Reactivity: how much behavior output overrides the scene base.
+        // Higher = behaviors dominate, allowing true blackout and dynamic range.
         let reactivity: Double = switch scenario {
-        case .lowEnergy, .declining: 0.5
-        case .mediumEnergy: 0.6
-        case .building: 0.65
-        case .highEnergy: 0.7
-        case .peakDrop: 0.8
+        case .lowEnergy, .declining: 0.7
+        case .mediumEnergy: 0.8
+        case .building: 0.85
+        case .highEnergy: 0.95
+        case .peakDrop: 1.0
         }
 
         return SceneSnapshot(
@@ -257,7 +258,8 @@ private enum LookTemplate: CaseIterable, Sendable {
         return result
     }
 
-    /// Build attribute dictionary from a LightColor, applying only attributes the fixture supports.
+    /// Build attribute dictionary from a LightColor.
+    /// Writes RGB intent for all color-capable fixtures (RGB or color wheel).
     private func colorAttrs(
         _ color: LightColor,
         dimmer: Double,
@@ -265,10 +267,13 @@ private enum LookTemplate: CaseIterable, Sendable {
     ) -> [FixtureAttribute: Double] {
         var attrs: [FixtureAttribute: Double] = [:]
         attrs[.dimmer] = dimmer
-        if fixture.attributes.contains(.red) { attrs[.red] = color.red }
-        if fixture.attributes.contains(.green) { attrs[.green] = color.green }
-        if fixture.attributes.contains(.blue) { attrs[.blue] = color.blue }
-        if fixture.attributes.contains(.white) { attrs[.white] = color.white }
+        let hasColor = fixture.attributes.contains(.red) || fixture.attributes.contains(.colorWheel)
+        if hasColor {
+            attrs[.red] = color.red
+            attrs[.green] = color.green
+            attrs[.blue] = color.blue
+            attrs[.white] = color.white
+        }
         return attrs
     }
 }

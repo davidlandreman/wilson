@@ -19,7 +19,7 @@ struct ColorSplitBehavior: Behavior {
         var result: [UUID: [FixtureAttribute: Double]] = [:]
 
         for (index, fixture) in fixtures.enumerated() {
-            guard fixture.attributes.contains(.red) else { continue }
+            guard fixture.attributes.contains(.red) || fixture.attributes.contains(.colorWheel) else { continue }
 
             // Spread palette colors across fixtures evenly
             let colorIndex: Int

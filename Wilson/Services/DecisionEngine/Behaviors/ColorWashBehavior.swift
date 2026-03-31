@@ -24,7 +24,9 @@ struct ColorWashBehavior: Behavior {
         var result: [UUID: [FixtureAttribute: Double]] = [:]
 
         for (index, fixture) in fixtures.enumerated() {
-            guard fixture.attributes.contains(.red) else { continue }
+            // Write RGB intent for all fixtures — the FixtureTranslator maps
+            // to color wheel or other output as needed.
+            guard fixture.attributes.contains(.red) || fixture.attributes.contains(.colorWheel) else { continue }
 
             // Per-fixture phase offset for rainbow spread
             let fixtureOffset: Double

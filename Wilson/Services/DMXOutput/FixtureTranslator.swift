@@ -30,6 +30,8 @@ enum FixtureTranslator {
 
     /// Moving head with color wheel instead of RGB mixing.
     /// Maps RGB intent → nearest color wheel position, uses shutter for strobe.
+    /// Respects manually set values (colorWheel, gobo, speed, mode, strobe) — if they're
+    /// already in the state (from the DMX controller), pass them through untouched.
     private static func translateColorWheelSpot(state: FixtureState, fixture: StageFixture) -> FixtureState {
         var out = FixtureState(fixtureID: state.fixtureID)
 
@@ -43,22 +45,30 @@ enum FixtureTranslator {
             if let v = state.attributes[attr] { out.attributes[attr] = v }
         }
 
-        // Map RGB intent → color wheel position
-        let r = state.attributes[.red] ?? 0
-        let g = state.attributes[.green] ?? 0
-        let b = state.attributes[.blue] ?? 0
-        if r + g + b > 0.01 {
-            out.attributes[.colorWheel] = rgbToColorWheel(r: r, g: g, b: b)
-        } else {
-            out.attributes[.colorWheel] = 0 // Open white
+        // Pass through manually set channels (gobo, speed, mode, custom)
+        for attr: FixtureAttribute in [.gobo, .speed, .mode, .custom] {
+            if let v = state.attributes[attr] { out.attributes[attr] = v }
         }
 
-        // Strobe: DMX 0 = open (no strobe), 1-255 = strobe slow→fast.
-        // Use mechanical shutter when strobe intent is present.
-        if let strobeIntent = state.attributes[.strobe], strobeIntent > 0.01 {
-            out.attributes[.strobe] = strobeIntent
+        // Color wheel: if already set directly (manual control), pass through.
+        // Otherwise map from RGB intent.
+        if let manualCW = state.attributes[.colorWheel] {
+            out.attributes[.colorWheel] = manualCW
+        } else {
+            let r = state.attributes[.red] ?? 0
+            let g = state.attributes[.green] ?? 0
+            let b = state.attributes[.blue] ?? 0
+            if r + g + b > 0.01 {
+                out.attributes[.colorWheel] = rgbToColorWheel(r: r, g: g, b: b)
+            }
+            // else: don't set — buildDMXFrame uses defaultValue (0 = open white)
         }
-        // else: don't set .strobe — buildDMXFrame uses defaultValue (0 = open)
+
+        // Strobe: if already set (manual or behavior), pass through.
+        if let strobeVal = state.attributes[.strobe], strobeVal > 0.01 {
+            out.attributes[.strobe] = strobeVal
+        }
+        // else: don't set — buildDMXFrame uses defaultValue (0 = open)
 
         return out
     }
@@ -112,27 +122,40 @@ enum FixtureTranslator {
     // MARK: - Color Wheel Mapping
 
     /// MINGJIE color wheel: 8 colors + white, each occupying a 10-value DMX range.
-    /// Returns normalized 0.0–1.0 value representing the DMX color wheel position.
+    /// Order verified by manual testing on the physical fixture.
     private static let colorWheelColors: [(r: Double, g: Double, b: Double, dmxCenter: Double)] = [
-        (1.0,  1.0,  1.0,    4.5),  // White (open)   DMX 0-9
-        (1.0,  0.0,  0.0,   14.5),  // Red             DMX 10-19
-        (0.93, 0.49, 0.19,  24.5),  // Orange          DMX 20-29
-        (1.0,  1.0,  0.0,   34.5),  // Lemon Yellow    DMX 30-39
-        (0.0,  0.69, 0.31,  44.5),  // Green           DMX 40-49
-        (0.18, 0.46, 0.71,  54.5),  // Blue            DMX 50-59
-        (0.91, 0.55, 0.79,  64.5),  // Pink            DMX 60-69
-        (0.0,  0.69, 0.94,  74.5),  // Sky Blue        DMX 70-79
+        (1.0,  1.0,  1.0,    4.5),  // White (open)    DMX 0-9
+        (1.0,  0.0,  0.0,   14.5),  // Red              DMX 10-19
+        (0.8,  1.0,  0.0,   24.5),  // Yellow-Green     DMX 20-29
+        (0.0,  0.0,  1.0,   34.5),  // Blue             DMX 30-39
+        (0.0,  0.69, 0.31,  44.5),  // Green            DMX 40-49
+        (1.0,  0.5,  0.0,   54.5),  // Orange           DMX 50-59
+        (0.91, 0.55, 0.79,  64.5),  // Pink             DMX 60-69
+        (0.0,  0.69, 0.94,  74.5),  // Sky Blue         DMX 70-79
     ]
 
     /// Find the nearest color wheel position for an RGB value.
+    /// Normalizes input to full brightness before matching so dimmed colors
+    /// still map to the correct wheel slot.
     private static func rgbToColorWheel(r: Double, g: Double, b: Double) -> Double {
+        // Normalize to full brightness for matching
+        let maxC = max(r, g, b)
+        let nr: Double, ng: Double, nb: Double
+        if maxC > 0.01 {
+            nr = r / maxC
+            ng = g / maxC
+            nb = b / maxC
+        } else {
+            return 4.5 / 255.0 // Near-black → white (open)
+        }
+
         var bestDistance = Double.infinity
         var bestDMX = 4.5 // Default: white
 
         for entry in colorWheelColors {
-            let dr = r - entry.r
-            let dg = g - entry.g
-            let db = b - entry.b
+            let dr = nr - entry.r
+            let dg = ng - entry.g
+            let db = nb - entry.b
             let distance = dr * dr + dg * dg + db * db
 
             if distance < bestDistance {
