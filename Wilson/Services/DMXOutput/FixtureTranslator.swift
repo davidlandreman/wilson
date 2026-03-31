@@ -107,25 +107,44 @@ enum FixtureTranslator {
         let dimmer = state.attributes[.dimmer] ?? 0
 
         // Blinder-class: aggressive blackout threshold.
-        // On a 260W fixture, even DMX 1-2 is visible. Cut hard below 5%.
         if dimmer < 0.05 {
             out.attributes[.dimmer] = 0
             return out
         }
-        out.attributes[.dimmer] = dimmer
 
-        // Snap colors to saturated primaries.
-        // The Betopper has discrete R/G/B/W LED groups — muddy blends look washed out.
-        // Snapping to the dominant channel(s) produces bold, clean looks.
+        // Blinder response curve:
+        //   Flash peak (>70%): full blast — white + color at full intensity
+        //   Decay (15-70%):    drop white immediately, dim color softly
+        //   Tail (5-15%):      very soft color glow, no white
         let r = state.attributes[.red] ?? 0
         let g = state.attributes[.green] ?? 0
         let b = state.attributes[.blue] ?? 0
         let w = state.attributes[.white] ?? 0
         let (snapR, snapG, snapB, snapW) = snapToSaturated(r: r, g: g, b: b, w: w)
-        out.attributes[.red] = snapR
-        out.attributes[.green] = snapG
-        out.attributes[.blue] = snapB
-        out.attributes[.white] = snapW
+
+        if dimmer > 0.7 {
+            // Flash peak: everything at full
+            out.attributes[.dimmer] = dimmer
+            out.attributes[.red] = snapR
+            out.attributes[.green] = snapG
+            out.attributes[.blue] = snapB
+            out.attributes[.white] = snapW
+        } else if dimmer > 0.15 {
+            // Decay: drop white, soften color
+            let colorScale = (dimmer - 0.15) / (0.7 - 0.15) // 0→1 over the range
+            out.attributes[.dimmer] = dimmer * 0.5 // Aggressive dimmer reduction
+            out.attributes[.red] = snapR * colorScale
+            out.attributes[.green] = snapG * colorScale
+            out.attributes[.blue] = snapB * colorScale
+            out.attributes[.white] = 0 // White bar off immediately after flash
+        } else {
+            // Tail: very soft glow
+            out.attributes[.dimmer] = dimmer * 0.3
+            out.attributes[.red] = snapR * 0.15
+            out.attributes[.green] = snapG * 0.15
+            out.attributes[.blue] = snapB * 0.15
+            out.attributes[.white] = 0
+        }
 
         // Strobe: hardware speed control (0=off, 1-255=slow→fast).
         // The Betopper's strobe channel needs a SUSTAINED speed value.
