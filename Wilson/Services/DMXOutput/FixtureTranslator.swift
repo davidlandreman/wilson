@@ -147,22 +147,33 @@ enum FixtureTranslator {
         }
 
         // Strobe: hardware speed control (0=off, 1-255=slow→fast).
-        // The Betopper's strobe channel needs a SUSTAINED speed value.
-        // StrobeBehavior's per-frame toggling doesn't work here — use the
-        // scene-based strobe speed from the LookGenerator instead.
-        // If manually set (DMX controller), pass through directly.
         if let strobeVal = state.attributes[.strobe], strobeVal > 0.01 {
             out.attributes[.strobe] = strobeVal
         }
 
-        // Pattern: drives RGB pattern (CH7), W pattern (CH9), RGBW pattern (CH12)
-        // All share .custom attribute so one value controls all pattern channels
-        if let pattern = state.attributes[.custom] {
-            out.attributes[.custom] = pattern
+        // Pattern channels — each driven independently for visual variety.
+        // .custom = Pigment + RGB pattern (CH6-7)
+        // .prism  = W pattern (CH9) — white bar animation
+        // .focus  = RGBW pattern (CH12) — combined effect
+        // .zoom   = Background color (CH14)
+        // .amber  = Background intensity (CH15)
+        if let rgbPattern = state.attributes[.custom] {
+            out.attributes[.custom] = rgbPattern
+        }
+        if let wPattern = state.attributes[.prism] {
+            out.attributes[.prism] = wPattern
+        }
+        if let rgbwPattern = state.attributes[.focus] {
+            out.attributes[.focus] = rgbwPattern
+        }
+        if let bgColor = state.attributes[.zoom] {
+            out.attributes[.zoom] = bgColor
+        }
+        if let bgLight = state.attributes[.amber] {
+            out.attributes[.amber] = bgLight
         }
 
-        // Speed: drives RGB velocity (CH8), W velocity (CH10), RGBW velocity (CH13)
-        // All share .speed attribute
+        // Speed: shared across all velocity channels
         if let speed = state.attributes[.speed] {
             out.attributes[.speed] = speed
         }

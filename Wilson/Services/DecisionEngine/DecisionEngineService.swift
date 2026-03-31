@@ -142,9 +142,9 @@ final class DecisionEngineService {
             let sceneReactivity = choreographer.sceneLibrary.activeReactivity
             let behaviorOnlyAttrs: Set<FixtureAttribute> = [.pan, .tilt, .panFine, .tiltFine]
             // Discrete/sustained values: snap to scene, don't lerp with behavior output.
+            // Pattern channels (.custom, .prism, .focus, .zoom, .amber) select discrete effects.
             // .strobe for non-movers: scene sets sustained hardware strobe speed.
-            // (Movers don't get scene .strobe — StrobeBehavior controls their shutter directly.)
-            let snapAttrs: Set<FixtureAttribute> = [.gobo, .custom, .strobe]
+            let snapAttrs: Set<FixtureAttribute> = [.gobo, .custom, .prism, .focus, .zoom, .amber, .strobe]
             for fixture in fixtures {
                 guard let sceneBase = choreographer.sceneLibrary.blendedOutput(for: fixture.id) else {
                     continue

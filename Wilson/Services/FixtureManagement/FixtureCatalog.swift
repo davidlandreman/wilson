@@ -97,6 +97,9 @@ enum FixtureCatalog {
     )
 
     /// 15-channel mode: full control with strobe, patterns, background. Set fixture display to "15CH" mode.
+    /// Pattern channels use repurposed attributes so each can be driven independently:
+    ///   .custom = Pigment/RGB pattern, .prism = W pattern, .focus = RGBW pattern,
+    ///   .zoom = Background color, .amber = Background intensity.
     static let betopperLF4808_15ch = FixtureDefinition(
         id: UUID(uuidString: "00000000-0000-0000-0000-000000000021")!,
         name: "Betopper LF4808 Matrix Strobe (15ch)",
@@ -110,13 +113,13 @@ enum FixtureCatalog {
             ChannelDefinition(offset: 5, attribute: .custom, defaultValue: 0),       // Pigment
             ChannelDefinition(offset: 6, attribute: .custom, defaultValue: 0),       // RGB pattern
             ChannelDefinition(offset: 7, attribute: .speed, defaultValue: 0),        // RGB velocity
-            ChannelDefinition(offset: 8, attribute: .custom, defaultValue: 0),       // W pattern
+            ChannelDefinition(offset: 8, attribute: .prism, defaultValue: 0),        // W pattern
             ChannelDefinition(offset: 9, attribute: .speed, defaultValue: 0),        // W velocity
             ChannelDefinition(offset: 10, attribute: .strobe, defaultValue: 0),      // RGBW strobe
-            ChannelDefinition(offset: 11, attribute: .custom, defaultValue: 0),      // RGBW pattern
+            ChannelDefinition(offset: 11, attribute: .focus, defaultValue: 0),       // RGBW pattern
             ChannelDefinition(offset: 12, attribute: .speed, defaultValue: 0),       // RGBW velocity
-            ChannelDefinition(offset: 13, attribute: .custom, defaultValue: 0),      // Background color
-            ChannelDefinition(offset: 14, attribute: .custom, defaultValue: 0),      // Background color light
+            ChannelDefinition(offset: 13, attribute: .zoom, defaultValue: 0),        // Background color
+            ChannelDefinition(offset: 14, attribute: .amber, defaultValue: 0),       // Background color light
         ]
     )
 

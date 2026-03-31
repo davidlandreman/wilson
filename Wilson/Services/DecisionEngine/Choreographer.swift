@@ -547,18 +547,36 @@ struct Choreographer: Sendable {
                 continue
             }
 
-            // Beat pulse
+            // Dimmer behavior — blinder-aware
             let isMoverGroupHigh = groupHasMovers(group, fixtures: fixtures)
+            let hasBlinderFixtures = groupHasStrobe(group, fixtures: fixtures) && !isMoverGroupHigh
             if isMoverGroupHigh && usePairSplit {
                 let beatOffset = Double(moverGroupCount) * 1.0
                 slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(intensity: 1.0, offset: beatOffset, variant: BeatPulseBehavior.Mode.alternating.rawValue)))
+            } else if hasBlinderFixtures {
+                // Blinders: sharp flash-to-black pulses. Vary the rhythm.
+                let blinderVariant = effectVariant % 3
+                switch blinderVariant {
+                case 0:
+                    // Half-time: flash beats 0 and 2 only (sparser, more dramatic)
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: BeatPulseBehavior.Mode.alternating.rawValue)))
+                case 1:
+                    // Every beat: rapid fire
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)))
+                default:
+                    // Onset-reactive: fires on transients for organic feel
+                    slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.onsetReactive.rawValue)))
+                }
             } else {
                 slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(intensity: 1.0)))
             }
 
-            // Color
+            // Color — blinder-aware
             switch colorVariant {
             case 0:
                 slots.append(BehaviorSlot(behavior: SpectralColorBehavior(), groupID: group.id,
@@ -567,6 +585,7 @@ struct Choreographer: Sendable {
                 slots.append(BehaviorSlot(behavior: ColorWashBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(speed: 2.0, offset: Double(index) * 0.5, variant: 1)))
             case 2:
+                // ColorSplit: each fixture gets a different color — great for blinders
                 slots.append(BehaviorSlot(behavior: ColorSplitBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(intensity: 1.0)))
             default:
@@ -737,21 +756,42 @@ struct Choreographer: Sendable {
                 continue
             }
 
-            // Dimmer: chase or beat pulse
-            switch dimmerVariant {
-            case 0:
-                slots.append(BehaviorSlot(behavior: ChaseBehavior(), groupID: group.id,
-                    parameters: BehaviorParameters(speed: 1.5, intensity: 1.0)))
-            case 1:
-                slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+            // Dimmer — blinder-aware at peak drop
+            let hasBlindersPeak = groupHasStrobe(group, fixtures: fixtures) && !groupHasMovers(group, fixtures: fixtures)
+            if hasBlindersPeak {
+                // Blinders at peak: sharp flash-to-black. Max drama.
+                switch dimmerVariant {
+                case 0:
+                    // Half-time slam: beats 0 and 2
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: BeatPulseBehavior.Mode.alternating.rawValue)))
+                case 1:
+                    // Onset-reactive: fires on musical transients
+                    slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.onsetReactive.rawValue)))
+                default:
+                    // Every-beat rapid fire
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)))
+                }
+                // Blinders get bold split colors at peak
+                slots.append(BehaviorSlot(behavior: ColorSplitBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(intensity: 1.0)))
-            default:
-                slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 1.0, variant: BeatPulseBehavior.Mode.alternating.rawValue)))
+            } else {
+                switch dimmerVariant {
+                case 0:
+                    slots.append(BehaviorSlot(behavior: ChaseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(speed: 1.5, intensity: 1.0)))
+                case 1:
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0)))
+                default:
+                    slots.append(BehaviorSlot(behavior: BeatPulseBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 1.0, variant: BeatPulseBehavior.Mode.alternating.rawValue)))
+                }
+                slots.append(BehaviorSlot(behavior: SpectralColorBehavior(), groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 1.0)))
             }
-
-            slots.append(BehaviorSlot(behavior: SpectralColorBehavior(), groupID: group.id,
-                parameters: BehaviorParameters(intensity: 1.0)))
 
             // Strobe on all strobe-capable fixtures at peak drop.
             // Movers: shutter strobe. Blinders: dimmer flash (hardware .strobe snapped away by scene).
