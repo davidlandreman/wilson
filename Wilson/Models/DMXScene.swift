@@ -110,6 +110,30 @@ struct SceneSnapshot: Sendable, Equatable {
     let transitionDuration: Double
     let grandMaster: Double
     let fixtureAttributes: [UUID: [FixtureAttribute: Double]]
+    /// True for algorithmically generated looks (vs user-created scenes).
+    let isGenerated: Bool
+
+    init(
+        name: String,
+        reactivity: Double,
+        energyLevel: SceneEnergyLevel,
+        mood: SceneMood,
+        transitionStyle: SceneTransitionStyle,
+        transitionDuration: Double,
+        grandMaster: Double,
+        fixtureAttributes: [UUID: [FixtureAttribute: Double]],
+        isGenerated: Bool = false
+    ) {
+        self.name = name
+        self.reactivity = reactivity
+        self.energyLevel = energyLevel
+        self.mood = mood
+        self.transitionStyle = transitionStyle
+        self.transitionDuration = transitionDuration
+        self.grandMaster = grandMaster
+        self.fixtureAttributes = fixtureAttributes
+        self.isGenerated = isGenerated
+    }
 
     static func == (lhs: SceneSnapshot, rhs: SceneSnapshot) -> Bool {
         lhs.name == rhs.name

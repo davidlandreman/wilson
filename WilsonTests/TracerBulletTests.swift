@@ -22,7 +22,7 @@ struct TracerBulletTests {
 
     @Test("Catalog contains expected fixtures")
     func catalogContents() {
-        #expect(FixtureCatalog.all.count == 3)
+        #expect(FixtureCatalog.all.count == 7)
         #expect(FixtureCatalog.all.contains(where: { $0.name == "Generic Strobe" }))
         #expect(FixtureCatalog.all.contains(where: { $0.name == "Generic RGB Par" }))
         #expect(FixtureCatalog.all.contains(where: { $0.name == "Generic Moving Head RGB" }))

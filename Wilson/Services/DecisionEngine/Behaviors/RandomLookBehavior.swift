@@ -96,8 +96,8 @@ struct RandomLookBehavior: Behavior {
         let panRange = 0.35 * (0.5 + 0.5 * intensity)
         let pan = 0.5 + (hash1 * 2.0 - 1.0) * panRange
 
-        // Tilt: audience-facing with variation. Range goes from ±0.05 to ±0.12
-        let tiltRange = 0.05 + 0.07 * intensity
+        // Tilt: audience-facing with variation. Range goes from ±0.10 to ±0.25
+        let tiltRange = 0.10 + 0.15 * intensity
         let tilt = MovementPatternBehavior.tiltHome + (hash2 * 2.0 - 1.0) * tiltRange
 
         return (pan: pan, tilt: tilt)

@@ -41,7 +41,6 @@ struct BeatPulseBehavior: Behavior {
             if !beatIndex.isMultiple(of: 2) {
                 // This is an off-beat for this group — stay dark
                 return fixtures.reduce(into: [:]) { result, fixture in
-                    guard fixture.attributes.contains(.dimmer) else { return }
                     result[fixture.id] = [.dimmer: 0]
                 }
             }
@@ -63,7 +62,6 @@ struct BeatPulseBehavior: Behavior {
 
         let scaled = dimmerValue * intensity
         return fixtures.reduce(into: [:]) { result, fixture in
-            guard fixture.attributes.contains(.dimmer) else { return }
             result[fixture.id] = [.dimmer: scaled]
         }
     }

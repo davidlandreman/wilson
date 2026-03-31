@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor @Observable
 final class AppState {
     let audioCaptureService = AudioCaptureService()
+    let coreAudioTapService = CoreAudioTapService()
     let audioAnalysisService = AudioAnalysisService()
     let decisionEngine = DecisionEngineService()
     let fixtureManager = FixtureManager()
@@ -26,12 +27,14 @@ final class AppState {
         // Wire audio sources → analysis pipeline (shared handler)
         let audioHandler = audioAnalysisService.makeAudioBufferHandler()
         audioCaptureService.onAudioBuffer = audioHandler
+        coreAudioTapService.onAudioBuffer = audioHandler
         testAudioService.onAudioBuffer = audioHandler
 
-        // Wire analysis → decision engine → virtual output pipeline
+        // Wire analysis → decision engine → virtual output + DMX output pipeline
         let engine = decisionEngine
         let fixtures = fixtureManager
         let virtual = virtualOutput
+        let dmx = dmxOutput
         let cues = cueService
         let recorder = telemetryRecorder
         audioAnalysisService.onMusicalStateUpdate = { [weak self] musicalState in
@@ -40,6 +43,16 @@ final class AppState {
             engine.autonomousScenes = self?.cachedSceneSnapshots ?? []
             engine.update(musicalState: musicalState, fixtures: currentFixtures)
             virtual.update(fixtureStates: engine.fixtureStates, fixtures: currentFixtures)
+
+            // DMX output to physical lights
+            if dmx.isConnected {
+                let frame = DMXOutputService.buildDMXFrame(
+                    fixtureStates: engine.fixtureStates,
+                    fixtures: currentFixtures
+                )
+                dmx.send(frame: frame)
+            }
+
             recorder.tick(
                 musicalState: musicalState,
                 mood: engine.currentMood,
@@ -65,10 +78,18 @@ final class AppState {
                     guard let self, self.dmxController.isActive else { return }
                     self.dmxController.tickCrossfade(engine: self.decisionEngine)
                     self.dmxController.pushAllOverrides(engine: self.decisionEngine)
+                    let currentFixtures = self.fixtureManager.fixtures
                     self.virtualOutput.update(
                         fixtureStates: self.decisionEngine.fixtureStates,
-                        fixtures: self.fixtureManager.fixtures
+                        fixtures: currentFixtures
                     )
+                    if self.dmxOutput.isConnected {
+                        let frame = DMXOutputService.buildDMXFrame(
+                            fixtureStates: self.decisionEngine.fixtureStates,
+                            fixtures: currentFixtures
+                        )
+                        self.dmxOutput.send(frame: frame)
+                    }
                 }
             }
             // Use .common mode so the timer fires during drag gesture tracking

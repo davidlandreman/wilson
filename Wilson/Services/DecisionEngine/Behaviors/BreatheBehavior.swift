@@ -29,7 +29,6 @@ struct BreatheBehavior: Behavior {
         var result: [UUID: [FixtureAttribute: Double]] = [:]
 
         for fixture in fixtures {
-            guard fixture.attributes.contains(.dimmer) else { continue }
 
             // Offset each fixture by trussSlot for wave effect
             let fixtureOffset: Double
@@ -41,7 +40,7 @@ struct BreatheBehavior: Behavior {
 
             let phase = (cyclePhase + fixtureOffset).truncatingRemainder(dividingBy: 1.0)
             // Sine wave mapped from [-1,1] to [minBrightness, 1.0]
-            let minBrightness = 0.15
+            let minBrightness = 0.02
             let wave = (sin(phase * 2 * .pi) + 1) / 2  // 0–1
             let dimmer = (minBrightness + wave * (1.0 - minBrightness)) * intensity
 

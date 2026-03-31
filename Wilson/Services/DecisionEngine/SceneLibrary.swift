@@ -4,8 +4,11 @@ import Foundation
 /// A Sendable struct owned by Choreographer — participates in the pipeline
 /// without introducing @Observable or actor isolation.
 struct SceneLibrary: Sendable {
-    /// Available scenes, set each frame from the main actor via DecisionEngineService.
+    /// Available user-created scenes, set each frame from the main actor via DecisionEngineService.
     var availableScenes: [SceneSnapshot] = []
+
+    /// Algorithmically generated look from LookGenerator (set by Choreographer each evaluation).
+    var generatedLook: SceneSnapshot?
 
     /// Currently active scene (nil = pure behavior mode).
     private(set) var activeScene: SceneSnapshot?
@@ -14,12 +17,22 @@ struct SceneLibrary: Sendable {
     /// Crossfade progress: 0.0 = fully previous, 1.0 = fully active.
     private(set) var transitionProgress: Double = 1.0
 
+    /// Names of recently selected scenes/looks for variety tracking.
+    private var recentNames: [String] = []
+    private static let maxRecent = 3
+
     // MARK: - Scene Selection
 
     /// Evaluate and select the best matching scene for the current scenario and mood.
-    /// Called at phrase boundaries by the Choreographer.
+    /// Considers both user-created scenes and the generated look as candidates.
     mutating func selectScene(scenario: Choreographer.Scenario, mood: MoodState) {
-        guard !availableScenes.isEmpty else {
+        // Build candidate pool: user scenes + generated look
+        var candidates = availableScenes
+        if let generated = generatedLook {
+            candidates.append(generated)
+        }
+
+        guard !candidates.isEmpty else {
             if activeScene != nil {
                 previousScene = activeScene
                 activeScene = nil
@@ -31,7 +44,7 @@ struct SceneLibrary: Sendable {
         var bestScore: Double = -1
         var bestScene: SceneSnapshot?
 
-        for scene in availableScenes {
+        for scene in candidates {
             let score = scoreScene(scene, scenario: scenario, mood: mood)
             if score > bestScore {
                 bestScore = score
@@ -54,6 +67,12 @@ struct SceneLibrary: Sendable {
             previousScene = activeScene
             activeScene = selected
             transitionProgress = selected.transitionStyle == .snap ? 1.0 : 0.0
+
+            // Track recency for variety
+            recentNames.append(selected.name)
+            if recentNames.count > Self.maxRecent {
+                recentNames.removeFirst()
+            }
         }
     }
 
@@ -62,10 +81,17 @@ struct SceneLibrary: Sendable {
         let energyScore = scoreEnergy(scene.energyLevel, scenario: scenario)
         let moodScore = scoreMood(scene.mood, mood: mood)
 
-        // Variety penalty: discourage re-selecting the same scene
-        let varietyPenalty: Double = (scene == activeScene) ? -0.15 : 0
+        // User-created scenes get a preference bonus — they're hand-crafted
+        let userBonus: Double = scene.isGenerated ? 0 : 0.12
 
-        return energyScore * 0.6 + moodScore * 0.4 + varietyPenalty
+        // Variety penalty: discourage re-selecting the same scene
+        var varietyPenalty: Double = (scene == activeScene) ? -0.15 : 0
+        // Additional penalty for recently used scenes/looks
+        if recentNames.contains(scene.name) && scene != activeScene {
+            varietyPenalty -= 0.2
+        }
+
+        return energyScore * 0.6 + moodScore * 0.4 + userBonus + varietyPenalty
     }
 
     private func scoreEnergy(_ level: SceneEnergyLevel, scenario: Choreographer.Scenario) -> Double {

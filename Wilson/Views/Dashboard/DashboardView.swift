@@ -3,7 +3,11 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(\.appState) private var appState
     @State private var captureError: String?
+    @State private var tapError: String?
     @State private var testAudioError: String?
+    @State private var dmxDevices: [String] = []
+    @State private var selectedDMXDevice: String?
+    @State private var dmxError: String?
 
     var body: some View {
         VStack(spacing: 20) {
@@ -49,6 +53,52 @@ struct DashboardView: View {
                     }
 
                     if let error = captureError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+                .padding(8)
+            }
+            .frame(maxWidth: 400)
+
+            GroupBox("Apple Music (Audio Tap)") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Label(
+                            appState.coreAudioTapService.isCapturing
+                                ? "Capturing \(appState.coreAudioTapService.targetProcessName ?? "Music")"
+                                : "Stopped",
+                            systemImage: appState.coreAudioTapService.isCapturing
+                                ? "music.note.list" : "music.note"
+                        )
+                        .foregroundStyle(
+                            appState.coreAudioTapService.isCapturing ? .green : .secondary
+                        )
+
+                        Spacer()
+
+                        Button(appState.coreAudioTapService.isCapturing ? "Stop" : "Start") {
+                            Task {
+                                await toggleAudioTap()
+                            }
+                        }
+                    }
+
+                    if appState.coreAudioTapService.isCapturing {
+                        HStack(spacing: 8) {
+                            Text("Level")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            ProgressView(value: min(Double(appState.coreAudioTapService.audioLevel * 3), 1.0))
+                                .animation(.linear(duration: 0.05), value: appState.coreAudioTapService.audioLevel)
+                            Text(String(format: "%.3f", appState.coreAudioTapService.audioLevel))
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if let error = tapError {
                         Text(error)
                             .font(.caption)
                             .foregroundStyle(.red)
@@ -171,20 +221,86 @@ struct DashboardView: View {
             .frame(maxWidth: 400)
 
             GroupBox("DMX Output") {
-                HStack {
-                    Label(
-                        appState.dmxOutput.isConnected ? "Connected" : "Disconnected",
-                        systemImage: appState.dmxOutput.isConnected
-                            ? "cable.connector" : "cable.connector.slash"
-                    )
-                    .foregroundStyle(
-                        appState.dmxOutput.isConnected ? .green : .secondary
-                    )
-                    Spacer()
+                VStack(spacing: 12) {
+                    HStack {
+                        Label(
+                            appState.dmxOutput.isConnected
+                                ? "Connected"
+                                : "Disconnected",
+                            systemImage: appState.dmxOutput.isConnected
+                                ? "cable.connector" : "cable.connector.slash"
+                        )
+                        .foregroundStyle(
+                            appState.dmxOutput.isConnected ? .green : .secondary
+                        )
+
+                        Spacer()
+
+                        if appState.dmxOutput.isConnected {
+                            Button("Disconnect") {
+                                appState.dmxOutput.disconnect()
+                            }
+                        }
+                    }
+
+                    if !appState.dmxOutput.isConnected {
+                        HStack(spacing: 8) {
+                            Picker("Device", selection: $selectedDMXDevice) {
+                                Text("Select device...").tag(nil as String?)
+                                ForEach(dmxDevices, id: \.self) { device in
+                                    Text(device.replacingOccurrences(of: "/dev/tty.", with: ""))
+                                        .tag(device as String?)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            Button("Scan") {
+                                dmxDevices = appState.dmxOutput.scanForDevices()
+                                if selectedDMXDevice == nil {
+                                    selectedDMXDevice = dmxDevices.first
+                                }
+                            }
+
+                            Button("Connect") {
+                                guard let device = selectedDMXDevice else { return }
+                                dmxError = nil
+                                do {
+                                    try appState.dmxOutput.connect(devicePath: device)
+                                } catch {
+                                    dmxError = error.localizedDescription
+                                }
+                            }
+                            .disabled(selectedDMXDevice == nil)
+                        }
+                    }
+
+                    if appState.dmxOutput.isConnected {
+                        HStack(spacing: 8) {
+                            if let path = appState.dmxOutput.connectedDevicePath {
+                                Text(path.replacingOccurrences(of: "/dev/tty.", with: ""))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(String(format: "%.1f Hz", appState.dmxOutput.frameRate))
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if let error = dmxError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
                 }
                 .padding(8)
             }
             .frame(maxWidth: 400)
+            .onAppear {
+                dmxDevices = appState.dmxOutput.scanForDevices()
+                selectedDMXDevice = dmxDevices.first
+            }
 
             Spacer()
         }
@@ -192,19 +308,43 @@ struct DashboardView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    /// Stop all audio sources except the one about to start.
+    private func stopOtherSources(except: String) async {
+        if except != "capture" && appState.audioCaptureService.isCapturing {
+            await appState.audioCaptureService.stopCapture()
+        }
+        if except != "tap" && appState.coreAudioTapService.isCapturing {
+            await appState.coreAudioTapService.stopCapture()
+        }
+        if except != "test" && appState.testAudioService.isPlaying {
+            appState.testAudioService.stop()
+        }
+    }
+
     private func toggleCapture() async {
         captureError = nil
         if appState.audioCaptureService.isCapturing {
             await appState.audioCaptureService.stopCapture()
         } else {
-            // Stop test audio if running — sources are mutually exclusive
-            if appState.testAudioService.isPlaying {
-                appState.testAudioService.stop()
-            }
+            await stopOtherSources(except: "capture")
             do {
                 try await appState.audioCaptureService.startCapture()
             } catch {
                 captureError = error.localizedDescription
+            }
+        }
+    }
+
+    private func toggleAudioTap() async {
+        tapError = nil
+        if appState.coreAudioTapService.isCapturing {
+            await appState.coreAudioTapService.stopCapture()
+        } else {
+            await stopOtherSources(except: "tap")
+            do {
+                try await appState.coreAudioTapService.startCapture()
+            } catch {
+                tapError = error.localizedDescription
             }
         }
     }
@@ -214,10 +354,7 @@ struct DashboardView: View {
         if appState.testAudioService.isPlaying {
             appState.testAudioService.stop()
         } else {
-            // Stop screen capture if running — sources are mutually exclusive
-            if appState.audioCaptureService.isCapturing {
-                await appState.audioCaptureService.stopCapture()
-            }
+            await stopOtherSources(except: "test")
             do {
                 try appState.testAudioService.start()
             } catch {

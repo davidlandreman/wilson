@@ -66,14 +66,25 @@ final class DecisionEngineService {
         moodEngine.update(musicalState: musicalState, deltaTime: clock.deltaTime)
         currentMood = moodEngine.state
 
+        // Resolve palette early — choreographer needs it for generative looks
+        let resolvedPalette = colorEngine.resolve(
+            palette: activePalette,
+            mood: moodEngine.state,
+            musicalState: musicalState
+        )
+
         // Provide scene snapshots to choreographer for autonomous selection
         choreographer.sceneLibrary.availableScenes = autonomousScenes
+
+        // Sync bar counter from mood engine to choreographer
+        choreographer.barCounter = moodEngine.barCounter
 
         // Layer 2: Choreographer decisions (conditional, not every frame)
         choreographer.evaluate(
             musicalState: musicalState,
             mood: moodEngine.state,
             fixtures: fixtures,
+            palette: resolvedPalette,
             time: clock.time
         )
         activeGroups = choreographer.groups
@@ -82,18 +93,8 @@ final class DecisionEngineService {
         }
         currentScenario = choreographer.currentScenario
 
-        // Sync bar counter from mood engine to choreographer
-        choreographer.barCounter = moodEngine.barCounter
-
         // Advance scene crossfade each frame
         choreographer.tickSceneTransition(deltaTime: clock.deltaTime)
-
-        // Layer 3: Resolve palette and build context
-        let resolvedPalette = colorEngine.resolve(
-            palette: activePalette,
-            mood: moodEngine.state,
-            musicalState: musicalState
-        )
 
         // Layer 4: Run all active behaviors and composite output
         var composited: [UUID: [FixtureAttribute: Double]] = [:]
@@ -135,8 +136,11 @@ final class DecisionEngineService {
         // Layer 4.5: Scene base layer blend
         // When the choreographer has selected a scene, lerp between scene base
         // values and behavior output based on the scene's reactivity level.
+        // Movement attributes (pan/tilt) are excluded — scenes control color/intensity,
+        // behaviors have full authority over movement.
         if choreographer.sceneLibrary.hasActiveScene {
             let sceneReactivity = choreographer.sceneLibrary.activeReactivity
+            let movementAttrs: Set<FixtureAttribute> = [.pan, .tilt, .panFine, .tiltFine]
             for fixture in fixtures {
                 guard let sceneBase = choreographer.sceneLibrary.blendedOutput(for: fixture.id) else {
                     continue
@@ -146,6 +150,13 @@ final class DecisionEngineService {
 
                 let allAttrs = Set(sceneBase.keys).union(behaviorAttrs.keys)
                 for attr in allAttrs {
+                    // Movement: behaviors have full control
+                    if movementAttrs.contains(attr) {
+                        if let bv = behaviorAttrs[attr] {
+                            blended[attr] = bv
+                        }
+                        continue
+                    }
                     let sv = sceneBase[attr] ?? 0
                     let bv = behaviorAttrs[attr] ?? 0
                     blended[attr] = sv + (bv - sv) * sceneReactivity

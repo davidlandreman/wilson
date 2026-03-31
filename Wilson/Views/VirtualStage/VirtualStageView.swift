@@ -5,7 +5,7 @@ struct VirtualStageView: View {
     @Environment(\.openWindow) private var openWindow
 
     private var virtualFixtures: [StageFixture] {
-        appState.fixtureManager.fixtures.filter(\.isVirtual)
+        appState.fixtureManager.fixtures
     }
 
     var body: some View {
@@ -55,7 +55,7 @@ struct FullScreenStageView: View {
     @Environment(\.appState) private var appState
 
     private var virtualFixtures: [StageFixture] {
-        appState.fixtureManager.fixtures.filter(\.isVirtual)
+        appState.fixtureManager.fixtures
     }
 
     var body: some View {

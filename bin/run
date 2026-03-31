@@ -20,5 +20,5 @@ if [ -z "$APP_PATH" ]; then
   exit 1
 fi
 
-echo "Launching $APP_PATH"
-open "$APP_PATH"
+echo "Launching $APP_PATH (logs below, Ctrl-C to quit)"
+"$APP_PATH/Contents/MacOS/Wilson" 2>&1

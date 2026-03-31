@@ -51,6 +51,27 @@ final class FixtureManager {
         }
     }
 
+    /// Update a fixture's DMX address and virtual status.
+    func patchFixture(id: UUID, dmxAddress: Int?, isVirtual: Bool) {
+        guard let index = fixtures.firstIndex(where: { $0.id == id }) else { return }
+        fixtures[index].dmxAddress = dmxAddress
+        fixtures[index].isVirtual = isVirtual
+
+        // Update persisted record
+        guard let context = modelContext else { return }
+        do {
+            let predicate = #Predicate<PatchedFixture> { $0.fixtureID == id }
+            let descriptor = FetchDescriptor<PatchedFixture>(predicate: predicate)
+            if let match = try context.fetch(descriptor).first {
+                match.dmxAddress = dmxAddress ?? 0
+                match.isVirtual = isVirtual
+                try context.save()
+            }
+        } catch {
+            logger.error("Failed to update fixture patch: \(error)")
+        }
+    }
+
     /// Get all fixtures matching a set of attributes.
     func fixtures(withAttribute attribute: FixtureAttribute) -> [StageFixture] {
         fixtures.filter { $0.attributes.contains(attribute) }

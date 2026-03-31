@@ -3,6 +3,7 @@ import SwiftUI
 struct LightDesignerView: View {
     @Environment(\.appState) private var appState
     @State private var showingCatalog = false
+    @State private var showingClearConfirmation = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,6 +20,13 @@ struct LightDesignerView: View {
                         }
                     }
                 }
+
+                Button(role: .destructive) {
+                    showingClearConfirmation = true
+                } label: {
+                    Label("Clear All", systemImage: "trash")
+                }
+                .disabled(appState.fixtureManager.fixtures.isEmpty)
 
                 Button {
                     showingCatalog = true
@@ -43,12 +51,14 @@ struct LightDesignerView: View {
             } else {
                 List {
                     ForEach(appState.fixtureManager.fixtures) { fixture in
-                        StageFixtureRow(fixture: fixture)
+                        StageFixtureRow(fixture: fixture) {
+                            removeFixture(id: fixture.id)
+                        }
                     }
                     .onDelete { offsets in
                         let ids = offsets.map { appState.fixtureManager.fixtures[$0].id }
                         for id in ids {
-                            appState.fixtureManager.removeFixture(id: id)
+                            removeFixture(id: id)
                         }
                     }
                 }
@@ -58,14 +68,30 @@ struct LightDesignerView: View {
         .sheet(isPresented: $showingCatalog) {
             FixtureCatalogSheet()
         }
+        .alert("Clear All Fixtures?", isPresented: $showingClearConfirmation) {
+            Button("Clear All", role: .destructive) {
+                clearAllFixtures()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will remove all \(appState.fixtureManager.fixtures.count) fixtures from the stage.")
+        }
     }
 
-    private func applyPreset(_ preset: FixturePreset) {
-        // Clear existing fixtures
+    private func clearAllFixtures() {
         for fixture in appState.fixtureManager.fixtures {
             appState.decisionEngine.removeOverride(for: fixture.id)
         }
         appState.fixtureManager.removeAll()
+    }
+
+    private func removeFixture(id: UUID) {
+        appState.decisionEngine.removeOverride(for: id)
+        appState.fixtureManager.removeFixture(id: id)
+    }
+
+    private func applyPreset(_ preset: FixturePreset) {
+        clearAllFixtures()
 
         // Add preset fixtures
         for entry in preset.fixtures {
@@ -160,44 +186,125 @@ struct FixturePreset: Identifiable {
 }
 
 struct StageFixtureRow: View {
+    @Environment(\.appState) private var appState
     let fixture: StageFixture
+    var onDelete: (() -> Void)?
+    @State private var isExpanded = false
+    @State private var dmxAddressText = ""
 
     var body: some View {
-        HStack {
-            Image(systemName: iconName)
-                .frame(width: 24)
-                .foregroundStyle(.secondary)
-
-            VStack(alignment: .leading) {
-                Text(fixture.label)
-                    .font(.body)
-                Text(fixture.definition.name)
-                    .font(.caption)
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: iconName)
+                    .frame(width: 24)
                     .foregroundStyle(.secondary)
+
+                VStack(alignment: .leading) {
+                    Text(fixture.label)
+                        .font(.body)
+                    Text(fixture.definition.name)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                if fixture.isVirtual {
+                    Text("Virtual")
+                        .font(.caption)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.blue.opacity(0.15))
+                        .foregroundStyle(.blue)
+                        .clipShape(Capsule())
+                } else if let addr = fixture.dmxAddress {
+                    Text("DMX \(addr)")
+                        .font(.caption.monospaced())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.green.opacity(0.15))
+                        .foregroundStyle(.green)
+                        .clipShape(Capsule())
+                }
+
+                Button {
+                    isExpanded.toggle()
+                    if isExpanded {
+                        dmxAddressText = fixture.dmxAddress.map(String.init) ?? ""
+                    }
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Patch settings")
+
+                if let onDelete {
+                    Button(role: .destructive, action: onDelete) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Remove fixture")
+                }
             }
+            .padding(.vertical, 2)
 
-            Spacer()
+            if isExpanded {
+                HStack(spacing: 12) {
+                    Toggle("DMX Output", isOn: Binding(
+                        get: { !fixture.isVirtual },
+                        set: { enabled in
+                            let addr = Int(dmxAddressText)
+                            appState.fixtureManager.patchFixture(
+                                id: fixture.id,
+                                dmxAddress: enabled ? (addr ?? 1) : nil,
+                                isVirtual: !enabled
+                            )
+                            if enabled && dmxAddressText.isEmpty {
+                                dmxAddressText = "1"
+                            }
+                        }
+                    ))
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
 
-            if fixture.isVirtual {
-                Text("Virtual")
-                    .font(.caption)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.blue.opacity(0.15))
-                    .foregroundStyle(.blue)
-                    .clipShape(Capsule())
-            }
+                    HStack(spacing: 4) {
+                        Text("Addr:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextField("1", text: $dmxAddressText)
+                            .frame(width: 45)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.caption.monospacedDigit())
+                            .onSubmit {
+                                if let addr = Int(dmxAddressText), addr >= 1 && addr <= 512 {
+                                    appState.fixtureManager.patchFixture(
+                                        id: fixture.id,
+                                        dmxAddress: addr,
+                                        isVirtual: false
+                                    )
+                                }
+                            }
+                    }
+                    .disabled(fixture.isVirtual)
 
-            if let addr = fixture.dmxAddress {
-                Text("DMX \(addr)")
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
+                    Text("\(fixture.definition.channelCount)ch")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+
+                    Spacer()
+                }
+                .padding(.leading, 32)
+                .padding(.vertical, 4)
             }
         }
-        .padding(.vertical, 2)
     }
 
     private var iconName: String {
+        if fixture.attributes.contains(.pan) || fixture.attributes.contains(.tilt) {
+            return "arrow.up.and.down.and.arrow.left.and.right"
+        }
         if fixture.attributes.contains(.red) {
             return "light.max"
         }

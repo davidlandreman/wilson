@@ -56,9 +56,9 @@ struct MovementPatternBehavior: Behavior {
         return result
     }
 
-    /// Tilt home position: ~30° from straight down, pointing at the audience.
-    /// 0.0 = straight down, 0.5 = horizontal, so 0.17 ≈ 30° outward.
-    static let tiltHome: Double = 0.17
+    /// Tilt home position: audience-facing, angled down ~55° from horizontal.
+    /// 0.0 = straight down, 0.5 = horizontal. 0.35 ≈ DMX 89, a natural forward position.
+    static let tiltHome: Double = 0.35
 
     enum Pattern: Int, Sendable {
         case sweep = 0
