@@ -171,6 +171,52 @@ final class DMXOutputService {
         return message
     }
 
+    // MARK: - Fixture Reset
+
+    /// Send a DMX reset command to all patched fixtures.
+    /// Sets channels with `.custom` attribute (typically the reset channel) to DMX 255,
+    /// holds for the specified duration, then returns to blackout.
+    func resetFixtures(_ fixtures: [StageFixture], holdDuration: Double = 3.0) {
+        guard isConnected else { return }
+
+        var frame = DMXFrame.blackout
+        for fixture in fixtures {
+            guard let dmxAddress = fixture.dmxAddress, dmxAddress >= 1 else { continue }
+            for channel in fixture.definition.channels {
+                let dmxChannel = dmxAddress + channel.offset
+                guard dmxChannel >= 1 && dmxChannel <= 512 else { continue }
+                if channel.attribute == .custom {
+                    // Reset channels: send 255 to trigger reset
+                    frame[dmxChannel] = 255
+                } else {
+                    frame[dmxChannel] = channel.defaultValue
+                }
+            }
+        }
+
+        // Send reset frame repeatedly for the hold duration, then blackout.
+        let resetFrame = frame
+        let queue = serialQueue
+        let fd = fileDescriptor
+        queue.async {
+            guard fd >= 0 else { return }
+            let start = DispatchTime.now()
+            let holdNanos = UInt64(holdDuration * 1_000_000_000)
+            while DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds < holdNanos {
+                let message = DMXOutputService.buildENTTECMessage(frame: resetFrame)
+                message.withUnsafeBytes { ptr in
+                    _ = Darwin.write(fd, ptr.baseAddress!, ptr.count)
+                }
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+            // Send blackout
+            let blackout = DMXOutputService.buildENTTECMessage(frame: .blackout)
+            blackout.withUnsafeBytes { ptr in
+                _ = Darwin.write(fd, ptr.baseAddress!, ptr.count)
+            }
+        }
+    }
+
     // MARK: - FixtureState → DMX Conversion
 
     /// Build a DMXFrame from decision engine fixture states and fixture definitions.

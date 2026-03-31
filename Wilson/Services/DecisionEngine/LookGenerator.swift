@@ -151,6 +151,67 @@ private enum LookTemplate: CaseIterable, Sendable {
         }
     }
 
+    /// Gobo intent for this template based on mood energy.
+    private func goboForMood(_ mood: MoodState, seed: Int) -> Double {
+        typealias G = FixtureTranslator.GoboIntent
+        let hash = LookGenerator.deterministicHash(seed &+ 42)
+
+        switch self {
+        // Low-key looks: mostly open or subtle
+        case .backlightWash, .evenWash, .warmFrontCoolBack:
+            return hash % 3 == 0 ? G.subtle : G.open
+
+        // Moody: always use a gobo for texture
+        case .moodyLow:
+            return [G.subtle, G.geometric, G.dynamic][hash % 3]
+
+        // Medium-energy looks: introduce gobos
+        case .singleColorSaturate, .colorSplitLeftRight, .complementarySplit:
+            return mood.intensity > 0.4
+                ? [G.open, G.subtle, G.geometric][hash % 3]
+                : G.open
+
+        // High-energy / dramatic looks: more dynamic gobos
+        case .highContrast, .triColorSpread:
+            return [G.geometric, G.dynamic, G.complex][hash % 3]
+
+        // Spotlight: use a gobo for the focused fixture
+        case .spotlightFocus:
+            return G.geometric
+        }
+    }
+
+    /// Pattern intensity for this template. 0=static, higher=more active.
+    private func patternForMood(_ mood: MoodState, seed: Int) -> Double? {
+        // Patterns on the Betopper are chase/flash effects — use sparingly.
+        // Most of the time the fixture should show solid color, not animated patterns.
+        guard mood.intensity > 0.6 else { return nil }
+
+        let hash = LookGenerator.deterministicHash(seed &+ 99)
+        switch self {
+        case .highContrast, .triColorSpread:
+            return Double(30 + hash % 80) / 255.0 // Active patterns at peak
+        case .singleColorSaturate:
+            return mood.intensity > 0.7 ? Double(20 + hash % 40) / 255.0 : nil
+        default:
+            return nil // Most templates: solid color, no patterns
+        }
+    }
+
+    /// Speed for pattern effects. Scales with mood energy.
+    private func speedForMood(_ mood: MoodState) -> Double? {
+        guard mood.intensity > 0.3 else { return nil }
+        return 0.2 + mood.intensity * 0.6 // 0.2–0.8 range
+    }
+
+    /// Hardware strobe speed for blinder-class fixtures.
+    /// Returns nil — blinders use dimmer-based flashing (via StrobeBehavior) instead
+    /// of the hardware strobe channel. Dimmer flash = brief ON in darkness (dramatic).
+    /// Hardware strobe = brief OFF in light (wrong feel for blinders).
+    private func strobeForMood(_ mood: MoodState) -> Double? {
+        nil
+    }
+
     func build(
         fixtures: [StageFixture],
         palette: ResolvedPalette,
@@ -158,17 +219,20 @@ private enum LookTemplate: CaseIterable, Sendable {
         seed: Int
     ) -> [UUID: [FixtureAttribute: Double]] {
         var result: [UUID: [FixtureAttribute: Double]] = [:]
+        let gobo = goboForMood(mood, seed: seed)
+        let pattern = patternForMood(mood, seed: seed)
+        let speed = speedForMood(mood)
+        let strobe = strobeForMood(mood)
 
         switch self {
         case .backlightWash:
-            // Rear fixtures (high trussSlot) bright in primary, front dim in secondary
             let maxSlot = fixtures.map(\.trussSlot).max() ?? 0
             let midSlot = maxSlot / 2
             for fixture in fixtures {
                 let isRear = fixture.trussSlot > midSlot
                 let color = isRear ? palette.primary() : palette.secondary()
                 let dimmer = isRear ? 0.85 : 0.35
-                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .warmFrontCoolBack:
@@ -177,15 +241,14 @@ private enum LookTemplate: CaseIterable, Sendable {
                 let isFront = fixture.position.y < midY
                 let color = isFront ? palette.primary() : palette.accent()
                 let dimmer = isFront ? 0.75 : 0.65
-                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .singleColorSaturate:
-            // One deep color for everything — which color rotates with seed
             let colorIndex = LookGenerator.deterministicHash(seed) % max(palette.colors.count, 1)
             let color = palette.colorForIndex(colorIndex)
             for fixture in fixtures {
-                result[fixture.id] = colorAttrs(color, dimmer: 0.9, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: 0.9, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .colorSplitLeftRight:
@@ -193,15 +256,13 @@ private enum LookTemplate: CaseIterable, Sendable {
             for fixture in fixtures {
                 let isLeft = fixture.position.x < midX
                 let color = isLeft ? palette.primary() : palette.secondary()
-                result[fixture.id] = colorAttrs(color, dimmer: 0.8, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: 0.8, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .moodyLow:
-            // Deep colors, low intensity
             for (i, fixture) in fixtures.enumerated() {
                 let color = palette.colorForIndex(i)
-                var attrs = colorAttrs(color, dimmer: 0.3 + Double(i % 3) * 0.1, fixture: fixture)
-                // Movers point at floor
+                var attrs = colorAttrs(color, dimmer: 0.3 + Double(i % 3) * 0.1, fixture: fixture, gobo: gobo)
                 if fixture.attributes.contains(.tilt) {
                     attrs[.tilt] = 0.2
                 }
@@ -209,41 +270,38 @@ private enum LookTemplate: CaseIterable, Sendable {
             }
 
         case .highContrast:
-            // Alternating bright/dark by trussSlot
             for fixture in fixtures {
                 let isBright = fixture.trussSlot.isMultiple(of: 2)
                 let color = isBright ? palette.primary() : palette.accent()
                 let dimmer = isBright ? 1.0 : 0.15
-                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .spotlightFocus:
-            // Center fixture bright, others subtle
             let sorted = fixtures.sorted { abs($0.position.x - 0.5) < abs($1.position.x - 0.5) }
             for (i, fixture) in sorted.enumerated() {
                 let isFocus = i == 0
                 let color = isFocus ? palette.primary() : palette.secondary()
                 let dimmer = isFocus ? 1.0 : 0.2
-                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture)
+                // Focus fixture gets gobo, others stay open
+                let fixtureGobo = isFocus ? gobo : FixtureTranslator.GoboIntent.open
+                result[fixture.id] = colorAttrs(color, dimmer: dimmer, fixture: fixture, gobo: fixtureGobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .evenWash:
-            // Clean unified look — all same color and intensity
             let color = palette.primary()
             for fixture in fixtures {
-                result[fixture.id] = colorAttrs(color, dimmer: 0.75, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: 0.75, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .complementarySplit:
-            // Movers get primary, color fixtures get secondary
             for fixture in fixtures {
                 let hasMover = fixture.attributes.contains(.pan) || fixture.attributes.contains(.tilt)
                 let color = hasMover ? palette.primary() : palette.secondary()
-                result[fixture.id] = colorAttrs(color, dimmer: 0.8, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: 0.8, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
 
         case .triColorSpread:
-            // Distribute primary/secondary/accent across positions
             for (i, fixture) in fixtures.enumerated() {
                 let colorIndex = i % 3
                 let color: LightColor = switch colorIndex {
@@ -251,7 +309,7 @@ private enum LookTemplate: CaseIterable, Sendable {
                 case 1: palette.secondary()
                 default: palette.accent()
                 }
-                result[fixture.id] = colorAttrs(color, dimmer: 0.85, fixture: fixture)
+                result[fixture.id] = colorAttrs(color, dimmer: 0.85, fixture: fixture, gobo: gobo, pattern: pattern, speed: speed, strobe: strobe)
             }
         }
 
@@ -260,19 +318,47 @@ private enum LookTemplate: CaseIterable, Sendable {
 
     /// Build attribute dictionary from a LightColor.
     /// Writes RGB intent for all color-capable fixtures (RGB or color wheel).
+    /// Optionally includes gobo, pattern, and speed intents.
     private func colorAttrs(
         _ color: LightColor,
         dimmer: Double,
-        fixture: StageFixture
+        fixture: StageFixture,
+        gobo: Double? = nil,
+        pattern: Double? = nil,
+        speed: Double? = nil,
+        strobe: Double? = nil
     ) -> [FixtureAttribute: Double] {
         var attrs: [FixtureAttribute: Double] = [:]
-        attrs[.dimmer] = dimmer
+
+        // Blinder-class fixtures (strobe channel, no pan/tilt): reserved for peaks.
+        // Off at low energy, barely on at medium, moderate at high.
+        let isBlinder = fixture.attributes.contains(.strobe) && !fixture.attributes.contains(.pan)
+        if isBlinder {
+            attrs[.dimmer] = dimmer * 0.08 // Very dim base — ~DMX 20 max. Behaviors drive peaks.
+        } else {
+            attrs[.dimmer] = dimmer
+        }
         let hasColor = fixture.attributes.contains(.red) || fixture.attributes.contains(.colorWheel)
         if hasColor {
             attrs[.red] = color.red
             attrs[.green] = color.green
             attrs[.blue] = color.blue
             attrs[.white] = color.white
+        }
+        if let gobo, fixture.attributes.contains(.gobo) {
+            attrs[.gobo] = gobo
+        }
+        if let pattern, fixture.attributes.contains(.custom) {
+            attrs[.custom] = pattern
+        }
+        if let speed, fixture.attributes.contains(.speed) {
+            attrs[.speed] = speed
+        }
+        // Hardware strobe speed: sustained value for fixtures with strobe channels.
+        // Only for non-mover fixtures (movers use shutter semantics instead).
+        if let strobe, fixture.attributes.contains(.strobe),
+           !fixture.attributes.contains(.pan) {
+            attrs[.strobe] = strobe
         }
         return attrs
     }

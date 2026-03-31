@@ -45,9 +45,16 @@ enum FixtureTranslator {
             if let v = state.attributes[attr] { out.attributes[attr] = v }
         }
 
-        // Pass through manually set channels (gobo, speed, mode, custom)
-        for attr: FixtureAttribute in [.gobo, .speed, .mode, .custom] {
+        // Pass through manually set channels (speed, mode, custom)
+        for attr: FixtureAttribute in [.speed, .mode, .custom] {
             if let v = state.attributes[attr] { out.attributes[attr] = v }
+        }
+
+        // Gobo: if already set as a raw DMX value (manual control), pass through.
+        // Otherwise map from gobo intent (0.0=open, 0.2=subtle, etc.)
+        if let goboVal = state.attributes[.gobo] {
+            // Values matching GoboIntent thresholds get mapped; raw fader values pass through
+            out.attributes[.gobo] = goboIntentToDMX(goboVal)
         }
 
         // Color wheel: if already set directly (manual control), pass through.
@@ -93,19 +100,52 @@ enum FixtureTranslator {
 
     // MARK: - RGBW + Dimmer + Strobe (Betopper LF4808 15ch)
 
-    /// RGBW fixture with master dimmer and strobe channel.
+    /// RGBW fixture with master dimmer, strobe, patterns, and speed (Betopper LF4808 15ch).
     private static func translateRGBWStrobe(state: FixtureState, fixture: StageFixture) -> FixtureState {
         var out = FixtureState(fixtureID: state.fixtureID)
 
-        // Pass through dimmer and color
-        if let v = state.attributes[.dimmer] { out.attributes[.dimmer] = v }
-        for attr: FixtureAttribute in [.red, .green, .blue, .white] {
-            if let v = state.attributes[attr] { out.attributes[attr] = v }
+        let dimmer = state.attributes[.dimmer] ?? 0
+
+        // Blinder-class: aggressive blackout threshold.
+        // On a 260W fixture, even DMX 1-2 is visible. Cut hard below 5%.
+        if dimmer < 0.05 {
+            out.attributes[.dimmer] = 0
+            return out
+        }
+        out.attributes[.dimmer] = dimmer
+
+        // Snap colors to saturated primaries.
+        // The Betopper has discrete R/G/B/W LED groups — muddy blends look washed out.
+        // Snapping to the dominant channel(s) produces bold, clean looks.
+        let r = state.attributes[.red] ?? 0
+        let g = state.attributes[.green] ?? 0
+        let b = state.attributes[.blue] ?? 0
+        let w = state.attributes[.white] ?? 0
+        let (snapR, snapG, snapB, snapW) = snapToSaturated(r: r, g: g, b: b, w: w)
+        out.attributes[.red] = snapR
+        out.attributes[.green] = snapG
+        out.attributes[.blue] = snapB
+        out.attributes[.white] = snapW
+
+        // Strobe: hardware speed control (0=off, 1-255=slow→fast).
+        // The Betopper's strobe channel needs a SUSTAINED speed value.
+        // StrobeBehavior's per-frame toggling doesn't work here — use the
+        // scene-based strobe speed from the LookGenerator instead.
+        // If manually set (DMX controller), pass through directly.
+        if let strobeVal = state.attributes[.strobe], strobeVal > 0.01 {
+            out.attributes[.strobe] = strobeVal
         }
 
-        // Map strobe intent to strobe channel
-        if let strobeIntent = state.attributes[.strobe], strobeIntent > 0.01 {
-            out.attributes[.strobe] = strobeIntent
+        // Pattern: drives RGB pattern (CH7), W pattern (CH9), RGBW pattern (CH12)
+        // All share .custom attribute so one value controls all pattern channels
+        if let pattern = state.attributes[.custom] {
+            out.attributes[.custom] = pattern
+        }
+
+        // Speed: drives RGB velocity (CH8), W velocity (CH10), RGBW velocity (CH13)
+        // All share .speed attribute
+        if let speed = state.attributes[.speed] {
+            out.attributes[.speed] = speed
         }
 
         return out
@@ -117,6 +157,65 @@ enum FixtureTranslator {
         // No special handling needed — strobe channel defaultValue (0) = open on most fixtures.
         // Only intervene if a strobe intent is present.
         return state
+    }
+
+    // MARK: - Gobo Intent
+
+    // MARK: - Betopper Color Snapping
+
+    /// Snap RGB values to the nearest saturated primary/secondary for clean LED output.
+    /// The Betopper has discrete R/G/B/W LED groups — blended pastels look washed out.
+    /// This keeps only the dominant 1-2 channels active, producing bold colors.
+    private static func snapToSaturated(r: Double, g: Double, b: Double, w: Double) -> (Double, Double, Double, Double) {
+        let maxC = max(r, g, b)
+        guard maxC > 0.01 else { return (0, 0, 0, w) }
+
+        // Normalize to find the color balance
+        let nr = r / maxC
+        let ng = g / maxC
+        let nb = b / maxC
+
+        // Threshold: channels below 40% of max get zeroed, above 60% get boosted to full
+        let lo = 0.4
+        let hi = 0.6
+
+        let snapR: Double = nr > hi ? 1.0 : (nr < lo ? 0.0 : nr)
+        let snapG: Double = ng > hi ? 1.0 : (ng < lo ? 0.0 : ng)
+        let snapB: Double = nb > hi ? 1.0 : (nb < lo ? 0.0 : nb)
+
+        // Scale back by original intensity
+        return (snapR * maxC, snapG * maxC, snapB * maxC, w)
+    }
+
+    /// Abstract gobo categories that the LookGenerator uses.
+    /// The FixtureTranslator maps these to fixture-specific DMX positions.
+    /// Stored as normalized 0.0–1.0 on the `.gobo` attribute.
+    enum GoboIntent {
+        static let open: Double     = 0.0   // No gobo
+        static let subtle: Double   = 0.2   // Soft texture (dots, radial)
+        static let geometric: Double = 0.4  // Hard shapes (triangle, hexagon)
+        static let dynamic: Double  = 0.6   // Motion feel (swirl)
+        static let complex: Double  = 0.8   // Busy, high-detail (jigsaw)
+    }
+
+    /// MINGJIE gobo wheel DMX positions (verified from OFL fixture data).
+    /// DMX 0-7: Open, 8-15: Rose, 16-23: Radial Dots, 24-31: Triangle,
+    /// 32-39: Hexagon, 40-47: Swirl A, 48-55: Swirl B, 56-63: Jigsaw
+    private static func goboIntentToDMX(_ intent: Double) -> Double {
+        let dmxCenter: Double
+        if intent < 0.1 {
+            dmxCenter = 3.5     // Open
+        } else if intent < 0.3 {
+            dmxCenter = 19.5    // Radial Dots (subtle texture)
+        } else if intent < 0.5 {
+            // Alternate between triangle and hexagon
+            dmxCenter = intent < 0.45 ? 27.5 : 35.5
+        } else if intent < 0.7 {
+            dmxCenter = 43.5    // Swirl (dynamic)
+        } else {
+            dmxCenter = 59.5    // Jigsaw (complex)
+        }
+        return dmxCenter / 255.0
     }
 
     // MARK: - Color Wheel Mapping

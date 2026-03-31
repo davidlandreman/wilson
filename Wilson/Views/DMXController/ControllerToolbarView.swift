@@ -69,6 +69,27 @@ struct ControllerToolbarView: View {
             }
             .buttonStyle(.plain)
 
+            Divider()
+                .frame(height: 24)
+
+            // Reset fixtures
+            Button {
+                appState.dmxOutput.resetFixtures(appState.fixtureManager.fixtures)
+            } label: {
+                Text("RESET")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.orange.opacity(0.15))
+                    )
+            }
+            .buttonStyle(.plain)
+            .help("Send DMX reset to all fixtures (3s hold)")
+            .disabled(!appState.dmxOutput.isConnected)
+
             Spacer()
 
             // Crossfade duration

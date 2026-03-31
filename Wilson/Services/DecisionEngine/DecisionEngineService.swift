@@ -140,7 +140,11 @@ final class DecisionEngineService {
         // behaviors have full authority over movement.
         if choreographer.sceneLibrary.hasActiveScene {
             let sceneReactivity = choreographer.sceneLibrary.activeReactivity
-            let movementAttrs: Set<FixtureAttribute> = [.pan, .tilt, .panFine, .tiltFine]
+            let behaviorOnlyAttrs: Set<FixtureAttribute> = [.pan, .tilt, .panFine, .tiltFine]
+            // Discrete/sustained values: snap to scene, don't lerp with behavior output.
+            // .strobe for non-movers: scene sets sustained hardware strobe speed.
+            // (Movers don't get scene .strobe — StrobeBehavior controls their shutter directly.)
+            let snapAttrs: Set<FixtureAttribute> = [.gobo, .custom, .strobe]
             for fixture in fixtures {
                 guard let sceneBase = choreographer.sceneLibrary.blendedOutput(for: fixture.id) else {
                     continue
@@ -151,9 +155,16 @@ final class DecisionEngineService {
                 let allAttrs = Set(sceneBase.keys).union(behaviorAttrs.keys)
                 for attr in allAttrs {
                     // Movement: behaviors have full control
-                    if movementAttrs.contains(attr) {
+                    if behaviorOnlyAttrs.contains(attr) {
                         if let bv = behaviorAttrs[attr] {
                             blended[attr] = bv
+                        }
+                        continue
+                    }
+                    // Discrete attributes: snap to scene value (no interpolation)
+                    if snapAttrs.contains(attr) {
+                        if let sv = sceneBase[attr] {
+                            blended[attr] = sv
                         }
                         continue
                     }

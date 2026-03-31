@@ -238,6 +238,13 @@ struct Choreographer: Sendable {
         }
     }
 
+    /// Check if a group contains any fixtures with a strobe channel.
+    private func groupHasStrobe(_ group: FixtureGroup, fixtures: [StageFixture]) -> Bool {
+        fixtures.contains { fixture in
+            group.fixtureIDs.contains(fixture.id) && fixture.attributes.contains(.strobe)
+        }
+    }
+
     // MARK: - Scenario Application
 
     private mutating func applyScenario(
@@ -450,6 +457,12 @@ struct Choreographer: Sendable {
                 }
             }
 
+            // Occasional strobe at medium energy — movers only (blinders reserved for peaks)
+            if dimmerVariant >= 4 && isMoverGroup && groupHasStrobe(group, fixtures: fixtures) {
+                slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                    parameters: BehaviorParameters(intensity: 0.6, variant: StrobeBehavior.Mode.punchy.rawValue)))
+            }
+
             // Movement
             if isMoverGroup {
                 let isRandomGroup = (moverGroupCount == 0) != swapMoverRoles
@@ -561,8 +574,9 @@ struct Choreographer: Sendable {
                     parameters: BehaviorParameters(speed: 3.0, intensity: 1.0)))
             }
 
-            // Strobe on movers at high energy
-            if isMoverGroupHigh {
+            // Strobe on all strobe-capable fixtures at high energy.
+            // Movers: shutter strobe. Blinders: dimmer flash.
+            if groupHasStrobe(group, fixtures: fixtures) {
                 let strobeMode: Int = switch effectVariant {
                 case 0: StrobeBehavior.Mode.onsetReactive.rawValue
                 case 1: StrobeBehavior.Mode.subdivision.rawValue
@@ -653,10 +667,12 @@ struct Choreographer: Sendable {
 
             slots.append(BehaviorSlot(behavior: BlackoutAccentBehavior(), groupID: group.id))
 
+            // Strobe on movers during build (blinders reserved for peak)
             if groupHasMovers(group, fixtures: fixtures) {
-                // Punchy strobe on movers during build
-                slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
-                    parameters: BehaviorParameters(intensity: 0.8, variant: StrobeBehavior.Mode.punchy.rawValue)))
+                if groupHasStrobe(group, fixtures: fixtures) {
+                    slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
+                        parameters: BehaviorParameters(intensity: 0.8, variant: StrobeBehavior.Mode.punchy.rawValue)))
+                }
 
                 switch movementVariant {
                 case 0:
@@ -737,11 +753,14 @@ struct Choreographer: Sendable {
             slots.append(BehaviorSlot(behavior: SpectralColorBehavior(), groupID: group.id,
                 parameters: BehaviorParameters(intensity: 1.0)))
 
-            if groupHasMovers(group, fixtures: fixtures) {
-                // Strobe on movers at peak drop
+            // Strobe on all strobe-capable fixtures at peak drop.
+            // Movers: shutter strobe. Blinders: dimmer flash (hardware .strobe snapped away by scene).
+            if groupHasStrobe(group, fixtures: fixtures) {
                 slots.append(BehaviorSlot(behavior: StrobeBehavior(), groupID: group.id,
                     parameters: BehaviorParameters(intensity: 1.0, variant: StrobeBehavior.Mode.onsetReactive.rawValue)))
+            }
 
+            if groupHasMovers(group, fixtures: fixtures) {
                 let isBallyhooGroup = (moverGroupCount == 0) != swapMoverRoles
                 if isBallyhooGroup {
                     slots.append(BehaviorSlot(behavior: MovementPatternBehavior(), groupID: group.id,
