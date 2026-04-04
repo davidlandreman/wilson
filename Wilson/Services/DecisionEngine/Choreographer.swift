@@ -104,6 +104,28 @@ struct Choreographer: Sendable {
         }
     }
 
+    /// Apply a scripted directive, bypassing autonomous decision-making.
+    /// Called by DecisionEngineService when a light script is active.
+    mutating func applyDirective(_ directive: ChoreographerDirective, fixtures: [StageFixture]) {
+        groups = groupingEngine.group(fixtures: fixtures, strategy: directive.groupingStrategy)
+        slots = []
+
+        for group in groups {
+            // Try role-specific assignments first, fall back to .all
+            let specs = directive.behaviorSlots[group.role]
+                ?? directive.behaviorSlots[.all]
+                ?? []
+            for spec in specs {
+                slots.append(BehaviorSlot(
+                    behavior: spec.behavior,
+                    groupID: group.id,
+                    weight: spec.weight,
+                    parameters: spec.parameters
+                ))
+            }
+        }
+    }
+
     /// Advance scene crossfade. Called every frame from DecisionEngineService.
     mutating func tickSceneTransition(deltaTime: Double) {
         sceneLibrary.tick(deltaTime: deltaTime)

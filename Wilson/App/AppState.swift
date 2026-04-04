@@ -14,6 +14,7 @@ final class AppState {
     let testAudioService = TestAudioService()
     let telemetryRecorder = TelemetryRecorder()
     let dmxController = DMXControllerService()
+    let lightScriptService = LightScriptService()
 
     var isRunning = false
     var isStageWindowOpen = false
@@ -37,11 +38,33 @@ final class AppState {
         let dmx = dmxOutput
         let cues = cueService
         let recorder = telemetryRecorder
+        let scriptService = lightScriptService
         audioAnalysisService.onMusicalStateUpdate = { [weak self] musicalState in
-            engine.activePalette = cues.activePalette
             let currentFixtures = fixtures.fixtures
+
+            // Light script: advance timeline, check cues/events
+            scriptService.update(
+                engineTime: engine.engineTime,
+                deltaTime: engine.engineDeltaTime,
+                isSilent: musicalState.isSilent
+            )
+
+            // Route through script or autonomous mode
+            let effectiveState: MusicalState
+            if scriptService.isPlaying {
+                effectiveState = scriptService.overlayMusicalState(musicalState)
+                engine.scriptDirective = scriptService.currentDirective()
+                engine.activePalette = scriptService.activePalette ?? cues.activePalette
+                engine.reactivity = scriptService.activeReactivity ?? 0.5
+                engine.movementIntensity = scriptService.activeMovementIntensity ?? 0.5
+            } else {
+                effectiveState = musicalState
+                engine.scriptDirective = nil
+                engine.activePalette = cues.activePalette
+            }
+
             engine.autonomousScenes = self?.cachedSceneSnapshots ?? []
-            engine.update(musicalState: musicalState, fixtures: currentFixtures)
+            engine.update(musicalState: effectiveState, fixtures: currentFixtures)
             virtual.update(fixtureStates: engine.fixtureStates, fixtures: currentFixtures)
 
             // DMX output to physical lights

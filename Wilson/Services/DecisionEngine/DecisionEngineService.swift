@@ -28,6 +28,15 @@ final class DecisionEngineService {
     /// Set by AppState each frame from the cached main-actor snapshot array.
     var autonomousScenes: [SceneSnapshot] = []
 
+    /// When set, overrides autonomous choreography with scripted directives.
+    var scriptDirective: ChoreographerDirective?
+
+    /// Current engine clock time (seconds since start). Exposed for LightScriptService.
+    var engineTime: Double { clock.time }
+
+    /// Current engine clock delta time. Exposed for LightScriptService.
+    var engineDeltaTime: Double { clock.deltaTime }
+
     // MARK: - Observable debug state
 
     private(set) var currentMood = MoodState()
@@ -79,14 +88,20 @@ final class DecisionEngineService {
         // Sync bar counter from mood engine to choreographer
         choreographer.barCounter = moodEngine.barCounter
 
-        // Layer 2: Choreographer decisions (conditional, not every frame)
-        choreographer.evaluate(
-            musicalState: musicalState,
-            mood: moodEngine.state,
-            fixtures: fixtures,
-            palette: resolvedPalette,
-            time: clock.time
-        )
+        // Layer 2: Choreographer decisions
+        if let directive = scriptDirective {
+            // Script mode: apply scripted directive instead of autonomous evaluation
+            choreographer.applyDirective(directive, fixtures: fixtures)
+        } else {
+            // Autonomous mode (conditional, not every frame)
+            choreographer.evaluate(
+                musicalState: musicalState,
+                mood: moodEngine.state,
+                fixtures: fixtures,
+                palette: resolvedPalette,
+                time: clock.time
+            )
+        }
         activeGroups = choreographer.groups
         activeSlotDescriptions = choreographer.slots.map {
             "\(type(of: $0.behavior).id) → \($0.groupID.uuidString.prefix(4))"

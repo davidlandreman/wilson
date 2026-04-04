@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct DashboardView: View {
     @Environment(\.appState) private var appState
@@ -8,6 +9,8 @@ struct DashboardView: View {
     @State private var dmxDevices: [String] = []
     @State private var selectedDMXDevice: String?
     @State private var dmxError: String?
+    @State private var showScriptPicker = false
+    @State private var scriptError: String?
 
     var body: some View {
         VStack(spacing: 20) {
@@ -219,6 +222,102 @@ struct DashboardView: View {
                 .padding(8)
             }
             .frame(maxWidth: 400)
+
+            GroupBox("Light Script") {
+                VStack(spacing: 12) {
+                    HStack {
+                        let scriptService = appState.lightScriptService
+                        switch scriptService.playbackState {
+                        case .idle:
+                            Label("No Script", systemImage: "doc")
+                                .foregroundStyle(.secondary)
+                        case .armed:
+                            Label("Armed — Waiting for Sound", systemImage: "bolt.circle")
+                                .foregroundStyle(.orange)
+                        case .playing:
+                            Label("Playing", systemImage: "play.circle.fill")
+                                .foregroundStyle(.green)
+                        case .finished:
+                            Label("Finished", systemImage: "checkmark.circle")
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        if appState.lightScriptService.playbackState != .idle {
+                            Button("Unload") {
+                                appState.lightScriptService.unloadScript()
+                                scriptError = nil
+                            }
+                        } else {
+                            Button("Load Script...") {
+                                showScriptPicker = true
+                            }
+                        }
+                    }
+
+                    if let script = appState.lightScriptService.script,
+                       appState.lightScriptService.playbackState != .idle {
+                        VStack(spacing: 8) {
+                            HStack {
+                                Text("\(script.metadata.title) — \(script.metadata.artist)")
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("\(Int(script.metadata.bpm)) BPM")
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            if appState.lightScriptService.isPlaying {
+                                HStack(spacing: 8) {
+                                    ProgressView(value: appState.lightScriptService.progress)
+                                        .animation(.linear(duration: 0.1), value: appState.lightScriptService.progress)
+                                    Text("Bar \(appState.lightScriptService.currentBar)")
+                                        .font(.caption.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: 50, alignment: .trailing)
+                                }
+
+                                if let label = appState.lightScriptService.currentCueLabel {
+                                    Text(label)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                        }
+                    }
+
+                    if let error = scriptError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+                .padding(8)
+            }
+            .frame(maxWidth: 400)
+            .fileImporter(
+                isPresented: $showScriptPicker,
+                allowedContentTypes: [UTType(filenameExtension: "wilsonscript") ?? .json, .json],
+                allowsMultipleSelection: false
+            ) { result in
+                scriptError = nil
+                switch result {
+                case .success(let urls):
+                    guard let url = urls.first else { return }
+                    let accessed = url.startAccessingSecurityScopedResource()
+                    defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+                    do {
+                        try appState.lightScriptService.loadScript(from: url)
+                    } catch {
+                        scriptError = error.localizedDescription
+                    }
+                case .failure(let error):
+                    scriptError = error.localizedDescription
+                }
+            }
 
             GroupBox("DMX Output") {
                 VStack(spacing: 12) {
